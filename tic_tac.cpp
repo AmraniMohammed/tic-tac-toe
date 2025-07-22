@@ -81,10 +81,10 @@ class Board {
                 return 1;
             }
             else if(board[2] == board[4] && board[4] == board[6]) {
-                bIsDraw = true;
                 return 1;
             }
             else if(std::count_if(board.begin(), board.end(), [](std::string value){return(value == "X" || value == "O");}) == 9) {
+                bIsDraw = true;
                 return 0;
             }
             return -1;
