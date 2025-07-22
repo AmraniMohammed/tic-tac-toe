@@ -117,10 +117,10 @@ int main() {
             //Update UI
             TicTacToeBoard->UpdateBoardUI();
         }
-
-    }while(TicTacToeBoard->CheckState() != 1);
+    }while(TicTacToeBoard->CheckState() == -1);
 
     if(TicTacToeBoard->IsDraw()) {
+        std::cout << "\n========== Game Over ==========" << std::endl;
         std::cout << "Draw" << std::endl;
     } else if(TicTacToeBoard->IsPlayer1()) {
         std::cout << "\n========== Game Over ==========" << std::endl;
