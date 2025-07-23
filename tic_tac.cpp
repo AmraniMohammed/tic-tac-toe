@@ -3,6 +3,7 @@
 #include <vector>
 #include <memory>
 #include <string>
+#include <optional>
 
 enum class GameState { PlayerXWin, PlayerOWin, Draw, Continue };
 enum class Player {X, O};
@@ -58,8 +59,8 @@ class Board {
             
         }
 
-        int readMove() {
-            std::cout << "\n" << ((current_player == Player::X) ? "Player 1 (X)" : "Player 2(O)") << " role, please type the psotion you want to fill: ";
+        std::optional<int> readMove() {
+            std::cout << "\n" << ((current_player == Player::X) ? "Player (X)" : "Player (O)") << " role, please type the psotion you want to fill: ";
             std::string string_input; 
             std::cin >> string_input;
             
@@ -71,17 +72,17 @@ class Board {
             }
             catch (std::exception& e)
             {
-                return -1;
+                return {};
             }
             return pos;
         };
-        bool checkIfValidInput(int pos) {
-            if(pos < 0 || pos > 8) {
+        bool checkIfValidInput(std::optional<int> pos) {
+            if(!pos || *pos < 0 || *pos > 8) {
                 std::cout << "Please give a valid number between 0 and 8\n";
                 return false;
             }
-            else if(board[pos] == "X" || board[pos] == "O") {
-                std::cout << "Position [" << pos << "] already filled, please choose another one\n";
+            else if(board[*pos] == "X" || board[*pos] == "O") {
+                std::cout << "Position [" << *pos << "] already filled, please choose another one\n";
                 return false;
             }
             return true;
@@ -148,7 +149,7 @@ int main() {
     board.updateBoardUI();
 
     //Get Position to fill from player
-    int position = - 1;
+    std::optional<int> position;
     GameState game_state = board.getState();
 
     do{ 
@@ -157,7 +158,7 @@ int main() {
         if(!board.checkIfValidInput(position)) continue;
 
         // Fill with symbol of the current player & update the board
-        board.fillSquareAtPosition(position);
+        board.fillSquareAtPosition(*position);
     
         //Update UI
         board.updateBoardUI();
