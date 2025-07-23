@@ -4,132 +4,170 @@
 #include <memory>
 #include <string>
 
+enum class GameState { PlayerXWin, PlayerOWin, Draw, Continue };
+enum class Player {X, O};
+
 class Board {
 
     private:
-        bool bIsDraw = false; // False => draw & True => Win
-        bool bIsPlayer1 = true;
+        Player current_player = Player::X;
+        GameState state = GameState::Continue;
         std::vector<std::string> board = {"0", "1", "2", "3", "4", "5", "6", "7", "8"};
+        inline static const std::vector<std::vector<int>> wins_cases = {{0, 1, 2}, {3, 4, 5}, {6, 7, 8},
+                                                                                {0, 3, 6}, {1, 4, 7}, {2, 5, 8},
+                                                                                {0, 4, 8}, {2, 4, 6}
+                                                                                };
+
 
     public:
-        int GetPlayerInput() {
-            std::cout << "\n" << (bIsPlayer1 ? "Player 1 (X)" : "Player 2(O)") << " role, please type the psotion you want to fill: ";
-            std::string string_input; 
-            std::cin >> string_input;
-            return std::stoi(string_input);
-        };
-        bool CheckIfValidInput(int pos) {
-            if(std::cin.fail() || pos < 0 || pos > 8) {
-                std::cout << "Please give a valid input between 0 and 8" << std::endl;
-                return false;
-            }
-            else if(board[pos] == "X" || board[pos] == "O") {
-                std::cout << "Position already filled, please choose another one" << std::endl;
-                return false;
-            }
-            return true;
-        };
-        bool IsDraw() {return bIsDraw;};
-        bool IsPlayer1() {return bIsPlayer1;};
-        std::vector<std::string> GetBoard() {return board;};
-        void FillSquareAtPosition(int pos) {
-            if(IsPlayer1()) {
+        Player getPlayer() const noexcept {return current_player;};
+        const std::vector<std::string>& getBoard() const {return board;};
+        GameState getState() const noexcept {return state;};
+
+        void fillSquareAtPosition(int pos) {
+            if(current_player == Player::X) {
                 board[pos] = "X";
             }
             else {
                 board[pos] = "O";
             }
-            bIsPlayer1 = !bIsPlayer1;
         };
-        void SetBoardSquareAtPosition(int pos, std::string symb) {
-            board[pos] = symb;
-        };
-
-        void UpdateBoardUI() {
-            std::cout << std::endl;
-
-            std::cout << " " << board[0]  << " " << "|" << " " << board[1] << " " << "|" << " " << board[2] << " " << std::endl;
-            std::cout << "___ ___ ___" << std::endl;
-
-            std::cout << " " << board[3]  << " " << "|" << " " << board[4] << " " << "|" << " " << board[5] << " " << std::endl;
-            std::cout << "___ ___ ___" << std::endl;
-            
-            std::cout << " " << board[6]  << " " << "|" << " " << board[7] << " " << "|" << " " << board[8] << " " << std::endl;
-        };
-
-        // 1 => Player 1 or 2 won & 0 => Draw & -1 => Go Next
-        int CheckState() {
-            if(board[0] == board[1] && board[1] == board[2]) {
-                return 1;
-            }
-            else if(board[3] == board[4] && board[4] == board[5]) {
-                return 1;
-            }
-            else if(board[6] == board[7] && board[7] == board[8]) {
-                return 1;
-            }
-            else if(board[0] == board[3] && board[3] == board[6]) {
-                return 1;
-            }
-            else if(board[1] == board[4] && board[4] == board[7]) {
-                return 1;
-            }
-            else if(board[2] == board[5] && board[5] == board[8]) {
-                return 1;
-            }
-            else if(board[0] == board[4] && board[4] == board[8]) {
-                return 1;
-            }
-            else if(board[2] == board[4] && board[4] == board[6]) {
-                return 1;
-            }
-            else if(std::count_if(board.begin(), board.end(), [](std::string value){return(value == "X" || value == "O");}) == 9) {
-                bIsDraw = true;
-                return 0;
-            }
-            return -1;
+         void advanceTurn() noexcept {
+            current_player = (current_player == Player::X ? Player::O : Player::X);
         }
 
+        void setStartPlayer() {
+            std::cout<< "Choose starting player symbol by typing X or O\n";
+            while (true)
+            {
+                std::string starting_player;
+                std::cin >> starting_player;
+
+                if(starting_player == "X" || starting_player == "x") {
+                    current_player = Player::X;
+                    break;
+                }
+                else if(starting_player == "O" || starting_player == "o") {
+                    current_player = Player::O;
+                    break;
+                }
+                else {
+                    std::cout<< "Please type a valid player symbol (X or O)\n";
+                }
+            }
+            
+        }
+
+        int readMove() {
+            std::cout << "\n" << ((current_player == Player::X) ? "Player 1 (X)" : "Player 2(O)") << " role, please type the psotion you want to fill: ";
+            std::string string_input; 
+            std::cin >> string_input;
+            
+            int pos;
+            
+            try
+            {
+                pos = std::stoi(string_input);
+            }
+            catch (std::exception& e)
+            {
+                return -1;
+            }
+            return pos;
+        };
+        bool checkIfValidInput(int pos) {
+            if(pos < 0 || pos > 8) {
+                std::cout << "Please give a valid number between 0 and 8\n";
+                return false;
+            }
+            else if(board[pos] == "X" || board[pos] == "O") {
+                std::cout << "Position [" << pos << "] already filled, please choose another one\n";
+                return false;
+            }
+            return true;
+        };
+
+        GameState updateGameState() {
+            bool is_win = false;
+
+            for(auto win_case: wins_cases) {
+                if(board[win_case[0]] == board[win_case[1]] && board[win_case[1]] == board[win_case[2]]) {
+                    is_win = true;
+                    break;
+                }
+            };
+
+            if(is_win) {
+                state = (current_player == Player::X ? GameState::PlayerXWin : GameState::PlayerOWin);
+            }
+            else if(std::count_if(board.begin(), board.end(), [](std::string value){return(value == "X" || value == "O");}) == 9) {
+                state = GameState::Draw;
+            }
+            else {
+                state = GameState::Continue;
+            }
+            return state;
+        };
+
+        void updateBoardUI() const noexcept {
+            std::cout <<"\n";
+
+            std::cout << " " << board[0]  << " " << "|" << " " << board[1] << " " << "|" << " " << board[2] << " " << "\n";
+            std::cout << "___ ___ ___" << "\n";
+
+            std::cout << " " << board[3]  << " " << "|" << " " << board[4] << " " << "|" << " " << board[5] << " " << "\n";
+            std::cout << "___ ___ ___" << "\n";
+            
+            std::cout << " " << board[6]  << " " << "|" << " " << board[7] << " " << "|" << " " << board[8] << " " << "\n";
+        };
+
+        void showResult() const noexcept{
+            if(state == GameState::Draw) {
+                std::cout << "\n========== Game Over ==========\n";
+                std::cout << "\n========== Draw ==========\n";
+            } else if(state == GameState::PlayerXWin) {
+                std::cout << "\n========== Game Over ==========\n";
+                std::cout << "\n========== Player X won ==========\n";
+            }
+            else {
+                std::cout << "\n========== Game Over ==========\n";
+                std::cout << "\n========== Player O won ==========\n";
+            }
+        }
 };
 
 
 int main() {
 
-    std::cout << "========== Tic Tac Toe Game ==========" << std::endl;
+    std::cout << "========== Tic Tac Toe Game ==========\n";
 
-    std::shared_ptr<Board> TicTacToeBoard = std::make_shared<Board>();
+    Board board;
 
-    TicTacToeBoard->UpdateBoardUI();
+    board.setStartPlayer();
+
+    board.updateBoardUI();
+
+    //Get Position to fill from player
+    int position = - 1;
+    GameState game_state = board.getState();
 
     do{ 
-
-        // std::cout << (TicTacToeBoard->IsPlayer1() ? "Player 1 role \n" : "Player 2 role \n");
-        
-        //Get Position to fill from player
-        int position = TicTacToeBoard->GetPlayerInput();
-
         //Check if valid input
-        if(TicTacToeBoard->CheckIfValidInput(position))
-        {
-            // Fill with symbol of the current player & update the board
-            TicTacToeBoard->FillSquareAtPosition(position);
+        position = board.readMove();
+        if(!board.checkIfValidInput(position)) continue;
 
-            //Update UI
-            TicTacToeBoard->UpdateBoardUI();
-        }
-    }while(TicTacToeBoard->CheckState() == -1);
+        // Fill with symbol of the current player & update the board
+        board.fillSquareAtPosition(position);
+    
+        //Update UI
+        board.updateBoardUI();
+        game_state = board.updateGameState();
 
-    if(TicTacToeBoard->IsDraw()) {
-        std::cout << "\n========== Game Over ==========" << std::endl;
-        std::cout << "Draw" << std::endl;
-    } else if(TicTacToeBoard->IsPlayer1()) {
-        std::cout << "\n========== Game Over ==========" << std::endl;
-        std::cout << "\n========== Player 2 won ==========" << std::endl;
-    }
-    else {
-        std::cout << "\n========== Game Over ==========" << std::endl;
-        std::cout << "\n========== Player 1 won ==========" << std::endl;
-    }
+        if(game_state == GameState::Continue) 
+            board.advanceTurn();
+    }while(game_state == GameState::Continue);
+
+    board.showResult();
     
     return 0;
 }
