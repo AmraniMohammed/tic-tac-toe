@@ -213,9 +213,17 @@ class Board {
 
         int getAiMove() {
 
+            std::vector<int> available_positions;
+
+            for(int i = 0; i < board.size(); i++) {
+                if(board[i] != 'X' && board[i] != 'O') {
+                    available_positions.push_back(i);
+                }
+            }
+
             // Define range
             int min = 0;
-            int max = 8;
+            int max = available_positions.size() - 1;
 
             // Initialize a random number generator
             std::random_device rd;
@@ -225,9 +233,7 @@ class Board {
             // Generate random number in the range [min, max]
             int randomValue = distrib(gen);
 
-            if(board[randomValue] == 'X' || board[randomValue] == 'O') return getAiMove();
-
-            return randomValue;
+            return available_positions[randomValue];
         }
 };
 
