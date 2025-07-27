@@ -7,19 +7,15 @@
 #include <limits>
 #include <random>
 
-enum class GameState { PlayerXWin, PlayerOWin, Draw, Continue };
-enum class Player {X, O, AI};
+enum class GameState { PlayerXWin, PlayerOWin, AIWin, Draw, Continue };
+enum class Player {X, O, AIO, AIX}; // AIX = AI playing with symbol X, AIO = AI playing with symbol O
 enum class GameMode { TwoPlayers, OnePlayer };
 enum class BoardValue {Empty, X, O};
 
 class Board {
 
     private:
-        Player current_player = Player::X;
-        Player first_player = Player::X;
-        Player second_player = Player::O;
         GameState state = GameState::Continue;
-        GameMode game_mode = GameMode::TwoPlayers;
         int board_size = 3;
         std::vector<std::vector<BoardValue>> board;
     
@@ -32,10 +28,138 @@ class Board {
         );
         }
 
-        Player getPlayer() const noexcept {return current_player;};
         const auto& getBoard() const {return board;};
         GameState getState() const noexcept {return state;};
-        GameMode getGameMode() const noexcept {return game_mode;};
+        int getBoardSize() const noexcept {return board_size;};
+
+        void makeMove(std::vector<int> position_2d, Player player) {
+            board[position_2d[0]][position_2d[1]] = getPlayerSymbol(player);
+        };
+        
+        
+        GameState evaluateState(Player current_player) {
+            if(checkIfWin()) {
+                switch (current_player)
+                {
+                case Player::X:
+                    state = GameState::PlayerXWin;
+                    break;
+                case Player::O:
+                    state = GameState::PlayerOWin;
+                    break;
+                case Player::AIO:
+                    state = GameState::AIWin;
+                    break;
+                case Player::AIX:
+                    state = GameState::AIWin;
+                    break;
+                }
+                return state;
+            }
+            int cnt = 0;
+            for(auto row: board) {
+                cnt += std::count_if(row.begin(), row.end(), [](BoardValue value){return(value == BoardValue::X || value == BoardValue::O);});
+            }
+            if(cnt == board_size * board_size) {
+                state = GameState::Draw;
+            }
+            else {
+                state = GameState::Continue;
+            }
+            return state;
+        };
+
+        BoardValue getPlayerSymbol(Player player) {
+            switch (player) {
+                case Player::X: return BoardValue::X;
+                case Player::O: return BoardValue::O;
+                case Player::AIO: return BoardValue::O;
+                case Player::AIX: return BoardValue::X;
+            }
+            return BoardValue::Empty;
+        }
+        
+        std::string getBoardSymbol(std::vector<int> ids, std::string index) const {
+            switch (board[ids[0]][ids[1]]) {
+                case BoardValue::X: return "X";
+                case BoardValue::O: return "O";
+            }
+            return index;
+        }
+
+        std::string getBoardSymbol(Player player) const {
+            if(player == Player::X || player == Player::AIX) return "X";
+            else if(player == Player::O || player == Player::AIO) return "O";
+            return ".";
+        }
+
+        std::vector<int> get2DPos(int pos1D) {
+            return { pos1D / board_size, pos1D % board_size };
+        }
+
+        bool isEmptyAt(int row, int col) const {
+            return board[row][col] == BoardValue::Empty;
+        }
+
+        std::vector<std::vector<int>> getAvailablePositions() const {
+            std::vector<std::vector<int>> positions;
+            for (int i = 0; i < board_size; ++i) {
+                for (int j = 0; j < board_size; ++j) {
+                    if (isEmptyAt(i, j)) {
+                        positions.push_back({i, j});
+                    }
+                }
+            }
+            return positions;
+        }
+
+        bool checkIfWin() {
+            // Row win case check
+            for(auto row: board) {
+                BoardValue check_value = row[0];
+                int result = std::count_if(row.begin(), row.end(), [check_value](BoardValue val){return (check_value == val && val != BoardValue::Empty);});
+                if(result == board_size) return true;
+            }
+
+            // Column win case check
+            for(int i = 0; i < board_size; i++) {
+                BoardValue check_value = board[0][i];
+                int cnt = 0;
+                if(check_value == BoardValue::Empty) continue;
+                for(int j = 0; j < board_size; j++) {
+                    if(board[j][i] == check_value) cnt++;
+                }
+                if(cnt == board_size) return true;
+            }
+
+            // Diagonal win case check
+            std::vector<BoardValue> diag_left;
+            std::vector<BoardValue> diag_right;
+            
+            int right = board_size - 1;
+            for(int i = 0; i < board_size; i++) {
+                diag_left.push_back(board[i][i]);
+                diag_right.push_back(board[i][board_size - 1 - i]); //right column index = left + (n - 1)
+            }
+
+            int result_left = std::count_if(diag_left.begin(), diag_left.end(), [diag_left](BoardValue val){return (diag_left[0] == val && val != BoardValue::Empty);});
+            int result_right = std::count_if(diag_right.begin(), diag_right.end(), [diag_right](BoardValue val){return (diag_right[0] == val && val != BoardValue::Empty);});
+            if(result_right == board_size || result_left == board_size) return true;
+
+            return false;
+        }
+};
+
+
+class GameManager {
+    private:
+        Board& board;
+        Player current_player = Player::X;
+        Player first_player = Player::X;
+        Player second_player = Player::O;
+        GameMode game_mode = GameMode::TwoPlayers;
+    public:
+        GameManager(Board& b) : board(b){ };
 
         void setup() {
             std::cout << "============================== Tic Tac Toe Game ==============================\n";
@@ -70,13 +194,13 @@ class Board {
                     if(game_mode == GameMode::OnePlayer  && (starting_player == "X" || starting_player == "x")) {
                         current_player = Player::X;
                         first_player = current_player;
-                        second_player = Player::AI;
+                        second_player = Player::AIO;
                         break;
                     }
                     else if(game_mode == GameMode::OnePlayer  && (starting_player == "O" || starting_player == "o")) {
                         current_player = Player::O;
                         first_player = current_player;
-                        second_player = Player::AI;
+                        second_player = Player::AIX;
                         break;
                     }
                     else if(starting_player == "X" || starting_player == "x") {
@@ -96,21 +220,53 @@ class Board {
             updateBoardUI();
         }
 
-        void fillSquareAtPosition(std::vector<int> position_2d) {
-            board[position_2d[0]][position_2d[1]] = getPlayerSymbol(current_player);
+        void updateBoardUI() const noexcept {
+            std::cout <<"\n";
+            for(int i = 0; i < board.getBoardSize(); i++) {
+
+                for(int j = 0; j < board.getBoardSize(); j++) {
+                    std::cout << "|" << " " << board.getBoardSymbol({i, j}, std::to_string(i * board.getBoardSize() + j)) << " ";
+                }
+                std::cout << "|\n";
+                drawDivider();
+            }
         };
         
-        void advanceTurn() noexcept {
-            if(game_mode == GameMode::OnePlayer) {
-                current_player = (current_player == Player::X || current_player == Player::O ? Player::AI : first_player);
-            }
-            else {
-                current_player = (current_player == Player::X ? Player::O : Player::X);
-            }
+        void drawDivider() const {
+            std::cout << std::string(board.getBoardSize() * 4 + (board.getBoardSize()-1)*1, '_') << "\n";
         }
 
+        void run() {
+            // Get Position to fill from player
+            std::vector<int> position_2d;
+            
+            // Game loop
+            while(board.getState() == GameState::Continue){ 
+                if(game_mode == GameMode::OnePlayer && (current_player == Player::AIX || current_player == Player::AIO)) {
+                    position_2d = getAiMove();
+                }
+                else {
+                    // Get input
+                    if(!readPlayerMove(position_2d)) continue;
+                }
+
+                // Game logic
+                board.makeMove(position_2d, current_player);
+                board.evaluateState(current_player);
+
+                // Draw 
+                updateBoardUI();
+
+                if(board.getState() == GameState::Continue) 
+                    advanceTurn();
+
+            };
+
+            showResult();
+        }
+        
         bool readPlayerMove(std::vector<int>& out_2d_position) {
-            std::cout << "\n" << "Player (" << getBoardSymbol(current_player) << ") role, please type the position you want to fill: ";
+            std::cout << "\n" << "Player (" << board.getBoardSymbol(current_player) << ") role, please type the position you want to fill: ";
             
             int pos;
             std::cin >> pos;
@@ -120,8 +276,8 @@ class Board {
                 std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                 return false;
             }
-            std::vector<int> pos_2d = get2DPos(pos);
-            if(board[pos_2d[0]][pos_2d[1]] == BoardValue::X || board[pos_2d[0]][pos_2d[1]] == BoardValue::O) {
+            std::vector<int> pos_2d = board.get2DPos(pos);
+            if(!board.isEmptyAt(pos_2d[0], pos_2d[1])) {
                 std::cout << "Position [" << pos << "] already filled, please choose another one\n";
                 return false;
             }
@@ -129,131 +285,11 @@ class Board {
             return true;
         }
 
-        GameState evaluateState() {
-            if(checkIfWin()) {
-                state = (current_player == Player::X ? GameState::PlayerXWin : GameState::PlayerOWin);
-                return state;
-            }
-            int cnt = 0;
-            for(auto row: board) {
-                cnt += std::count_if(row.begin(), row.end(), [](BoardValue value){return(value == BoardValue::X || value == BoardValue::O);});
-            }
-            if(cnt == board_size * board_size) {
-                state = GameState::Draw;
-            }
-            else {
-                state = GameState::Continue;
-            }
-            return state;
-        };
-
-        void updateBoardUI() const noexcept {
-            std::cout <<"\n";
-            for(int i = 0; i < board_size; i++) {
-
-                for(int j = 0; j < board_size; j++) {
-                    std::cout << "|" << " " << getBoardSymbol({i, j}, std::to_string(i * board_size + j)) << " ";
-                }
-                std::cout << "|\n";
-                drawDivider();
-            }
-        };
-
-        void drawDivider() const {
-            std::cout << std::string(board_size * 4 + (board_size-1)*1, '_') << "\n";
-        }
-        
-        void showResult() const noexcept{
-            if(state == GameState::Draw) {
-                std::cout << "\n========== Game Over ==========\n";
-                std::cout << "\n========== Draw ==========\n";
-            } else if(state == GameState::PlayerXWin) {
-                std::cout << "\n========== Game Over ==========\n";
-                std::cout << "\n========== Player X won ==========\n";
-            }
-            else if(state == GameState::PlayerOWin) {
-                std::cout << "\n========== Game Over ==========\n";
-                std::cout << "\n========== Player O won ==========\n";
-            }
-        }
-
-        void run() {
-            // Get Position to fill from player
-            std::vector<int> position_2d;
-            
-            // Game loop
-            while(getState() == GameState::Continue){ 
-
-                if(getGameMode() == GameMode::OnePlayer && getPlayer() == Player::AI) {
-                    //std::cout << "One player mode vs AI coming soon ... \n";
-                    position_2d = getAiMove();
-                    //break;
-                }
-                else {
-                    // Get input
-                    if(!readPlayerMove(position_2d)) continue;
-                }
-
-                // Game logic
-                fillSquareAtPosition(position_2d);
-                evaluateState();
-
-                // Draw 
-                updateBoardUI();
-
-                if(getState() == GameState::Continue) 
-                    advanceTurn();
-
-            };
-
-            showResult();
-        }
-
-        BoardValue getPlayerSymbol(Player player) {
-            switch (player) {
-                case Player::X: return BoardValue::X;
-                case Player::O: return BoardValue::O;
-                case Player::AI: {
-                    if(first_player == Player::X) return BoardValue::O;
-                    else return BoardValue::X;
-                };
-            }
-            return BoardValue::Empty;
-        }
-
-        
-        std::string getBoardSymbol(std::vector<int> ids, std::string index) const {
-            switch (board[ids[0]][ids[1]]) {
-                case BoardValue::X: return "X";
-                case BoardValue::O: return "O";
-            }
-            return index;
-        }
-
-        std::string getBoardSymbol(Player player) const {
-            switch (player) {
-                case Player::X: return "X";
-                case Player::O: return "O";
-            }
-            return ".";
-        }
-
-
-        std::vector<int> get2DPos(int pos1D) {
-            return { pos1D / board_size, pos1D % board_size };
-        }
-
         std::vector<int> getAiMove() {
 
             std::vector<std::vector<int>> available_positions;
 
-            for(int i = 0; i < board.size(); i++) {
-                for(int j = 0; j < board.size(); j++) {
-                    if(board[i][j] != BoardValue::X && board[i][j] != BoardValue::O) {
-                        available_positions.push_back({i, j});
-                    }
-                }
-            }
+            available_positions = board.getAvailablePositions();
 
             // Define range
             int min = 0;
@@ -270,50 +306,47 @@ class Board {
             return available_positions[randomValue];
         }
 
-        bool checkIfWin() {
-            // Row win case check
-            for(auto row: board) {
-                BoardValue check_value = row[0];
-                int result = std::count_if(row.begin(), row.end(), [check_value](BoardValue val){return (check_value == val && val != BoardValue::Empty);});
-                if(result == board_size) return true;
+        void showResult() const noexcept{
+            if(board.getState() == GameState::Draw) {
+                std::cout << "\n========== Game Over ==========\n";
+                std::cout << "\n========== Draw ==========\n";
+            } else if(board.getState() == GameState::PlayerXWin) {
+                std::cout << "\n========== Game Over ==========\n";
+                std::cout << "\n========== Player X won ==========\n";
             }
-
-            // Column win case check
-            for(int i = 0; i < board_size; i++) {
-                BoardValue check_value = board[0][i];
-                int cnt = 0;
-                if(check_value == BoardValue::Empty) continue;
-                for(int j = 0; j < board_size; j++) {
-                    if(board[j][i] == check_value) cnt++;
-                }
-                if(cnt == board_size) return true;
+            else if(board.getState() == GameState::PlayerOWin) {
+                std::cout << "\n========== Game Over ==========\n";
+                std::cout << "\n========== Player O won ==========\n";
             }
-
-            // Diagonal win case check
-            std::vector<BoardValue> diag_left;
-            std::vector<BoardValue> diag_right;
-            
-            int right = board_size - 1;
-            for(int i = 0; i < board_size; i++) {
-                diag_left.push_back(board[i][i]);
-                diag_right.push_back(board[i][i + board_size - 1]); //right column index = left + (n - 1)
+            else if(board.getState() == GameState::AIWin) {
+                std::cout << "\n========== Game Over ==========\n";
+                std::cout << "\n========== AI won ==========\n";
             }
-
-            int result_left = std::count_if(diag_left.begin(), diag_left.end(), [diag_left](BoardValue val){return (diag_left[0] == val && val != BoardValue::Empty);});
-            int result_right = std::count_if(diag_right.begin(), diag_right.end(), [diag_right](BoardValue val){return (diag_right[0] == val && val != BoardValue::Empty);});
-            if(result_right == board_size || result_left == board_size) return true;
-
-            return false;
         }
-    };
+        
+        void advanceTurn() noexcept {
+            if(game_mode == GameMode::OnePlayer) {
+                if(current_player == Player::X) current_player = Player::AIO;
+                else if(current_player == Player::O) current_player = Player::AIX;
+                else if(current_player == Player::AIX) current_player = Player::O;
+                else current_player = Player::X;
+            }
+            else {
+                current_player = (current_player == Player::X ? Player::O : Player::X);
+            }
+        }
+
+};
 
 
-int main() {    
+int main() {   
     Board board;
+    GameManager game_manager(board); 
+    //game_manager.setBoard(board);
 
-    board.setup();
+    game_manager.setup();
 
-    board.run();
+    game_manager.run();
     
     return 0;
 }
