@@ -378,9 +378,8 @@ class GameManager {
         int getUtility(std::vector<std::vector<BoardValue>>& board_table, Player current_player) {
             GameState state =  board.evaluateState(current_player, board_table);
             if(state == GameState::AIWin) return 1;
-            else if(state == GameState::PlayerXWin || state == GameState::PlayerOWin) return -1;
             else if(state == GameState::Draw) return 0;
-            return 0;
+            return -1;
         }
         std::vector<std::vector<int>> getActions(std::vector<std::vector<BoardValue>>& board_table) {
             std::vector<std::vector<int>> result;
@@ -397,10 +396,6 @@ class GameManager {
         }
 };
 
-
-class AIPlayer {
-
-};
 
 int main() {   
     Board board;
