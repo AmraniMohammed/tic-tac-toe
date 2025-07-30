@@ -153,7 +153,7 @@ class Board {
         }
 
         bool isFull(std::vector<std::vector<BoardValue>> board) {
-            for(int i = 1; i < board_size; i++) {
+            for(int i = 0; i < board_size; i++) {
                 for(int j = 0; j < board_size; j++) {
                     if(board[i][j] == BoardValue::Empty) return false;
                 }
@@ -348,7 +348,7 @@ class GameManager {
             }
         }
 
-        int miniMaxAlgo(std::vector<std::vector<BoardValue>> board_table, int depth, Player current_player, Player human_player, Player ai_player) {
+        int miniMaxAlgo(std::vector<std::vector<BoardValue>>& board_table, int depth, Player current_player, Player human_player, Player ai_player) {
             if(isTerminal(board_table) || depth == 0) {
                 return getUtility(board_table, current_player);
             }
