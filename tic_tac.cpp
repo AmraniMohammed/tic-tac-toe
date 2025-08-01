@@ -7,7 +7,8 @@
 #include <limits>
 #include <random>
 
-enum class GameState { PlayerXWin, PlayerOWin, AIWin, Draw, Continue };
+enum class GameState { PlayerXWin, PlayerOWin, Draw, Continue };
+enum class Winner { X, O, Draw, None };
 enum class Player {X, O, AIO, AIX}; // AIX = AI playing with symbol X, AIO = AI playing with symbol O
 enum class GameMode { TwoPlayers, OnePlayer };
 enum class BoardValue {Empty, X, O};
@@ -40,38 +41,65 @@ class Board {
         
         
         GameState evaluateState(Player current_player, const std::vector<std::vector<BoardValue>>& board) {
-            GameState result_state;
-            if(checkIfWin(board)) {
-                switch (current_player)
-                {
-                case Player::X:
-                    result_state = GameState::PlayerXWin;
-                    break;
-                case Player::O:
-                    result_state = GameState::PlayerOWin;
-                    break;
-                case Player::AIO:
-                    result_state = GameState::AIWin;
-                    break;
-                case Player::AIX:
-                    result_state = GameState::AIWin;
-                    break;
-                }
-                return result_state;
+            switch (evaluateWinner(board))
+            {
+            case Winner::X:
+                return GameState::PlayerXWin;
+                break;
+            case Winner::O:
+                return GameState::PlayerOWin;
+                break;
+            case Winner::Draw:
+                return GameState::Draw;
+                break;
+            default:
+                return GameState::Continue;
+                break;
             }
-            int cnt = 0;
-            for(auto row: board) {
-                cnt += std::count_if(row.begin(), row.end(), [](BoardValue value){return(value == BoardValue::X || value == BoardValue::O);});
-            }
-            if(cnt == board_size * board_size) {
-                result_state = GameState::Draw;
-            }
-            else {
-                result_state = GameState::Continue;
-            }
-            return result_state;
         };
 
+        Winner evaluateWinner(const std::vector<std::vector<BoardValue>>& board) {
+            int board_dim = board.size();
+            // Row win case check
+            for(auto row: board) {
+                BoardValue check_value = row[0];
+                int cnt = std::count_if(row.begin(), row.end(), [check_value](BoardValue val){return (check_value == val && val != BoardValue::Empty);});
+                if(cnt == board_dim && check_value == BoardValue::X) return Winner::X;
+                else if(cnt == board_dim && check_value == BoardValue::O) return Winner::O;
+            }
+
+            // Column win case check
+            for(int i = 0; i < board_dim; i++) {
+                BoardValue check_value = board[0][i];
+                int cnt = 0;
+                if(check_value == BoardValue::Empty) continue;
+                for(int j = 0; j < board_dim; j++) {
+                    if(board[j][i] == check_value) cnt++;
+                }
+                if(cnt == board_dim && check_value == BoardValue::X) return Winner::X;
+                else if(cnt == board_dim && check_value == BoardValue::O) return Winner::O;
+            }
+
+            // Diagonal win case check
+            std::vector<BoardValue> diag_left;
+            std::vector<BoardValue> diag_right;
+            
+            
+            for(int i = 0; i < board_dim; i++) {
+                diag_left.push_back(board[i][i]);
+                diag_right.push_back(board[i][board_dim - 1 - i]); //right column index = left + (n - 1)
+            }
+
+            int cnt_left = std::count_if(diag_left.begin(), diag_left.end(), [diag_left](BoardValue val){return (diag_left[0] == val && val != BoardValue::Empty);});
+            int cnt_right = std::count_if(diag_right.begin(), diag_right.end(), [diag_right](BoardValue val){return (diag_right[0] == val && val != BoardValue::Empty);});
+            if((cnt_left == board_dim || cnt_right == board_dim) && (diag_left[0] == BoardValue::X || diag_right[0] == BoardValue::X)) return Winner::X;
+            else if((cnt_left == board_dim || cnt_right == board_dim) && (diag_left[0] == BoardValue::O || diag_right[0] == BoardValue::O)) return Winner::O;
+
+            if(isFull(board)) return Winner::Draw;
+
+            return Winner::None;
+        }
+        
         BoardValue getPlayerSymbol(Player player) {
             switch (player) {
                 case Player::X: return BoardValue::X;
@@ -100,7 +128,7 @@ class Board {
             return { pos1D / board_size, pos1D % board_size };
         }
 
-        bool isEmptyAt(int row, int col, std::vector<std::vector<BoardValue>> board) const {
+        bool isEmptyAt(int row, int col, const std::vector<std::vector<BoardValue>>& board) const {
             return board[row][col] == BoardValue::Empty;
         }
 
@@ -330,10 +358,6 @@ class GameManager {
                 std::cout << "\n========== Game Over ==========\n";
                 std::cout << "\n========== Player O won ==========\n";
             }
-            else if(board.getState() == GameState::AIWin) {
-                std::cout << "\n========== Game Over ==========\n";
-                std::cout << "\n========== AI won ==========\n";
-            }
         }
         
         void advanceTurn() noexcept {
@@ -350,7 +374,7 @@ class GameManager {
 
         int miniMaxAlgo(std::vector<std::vector<BoardValue>>& board_table, int depth, Player current_player, Player human_player, Player ai_player) {
             if(isTerminal(board_table) || depth == 0) {
-                return getUtility(board_table, current_player);
+                return getUtility(board_table, ai_player);
             }
             if(current_player == ai_player) {
                 int max_eval = -2; //utility values are -1, 0, 1
@@ -375,10 +399,10 @@ class GameManager {
             return board.isFull(board_table);
         }
 
-        int getUtility(std::vector<std::vector<BoardValue>>& board_table, Player current_player) {
-            GameState state =  board.evaluateState(current_player, board_table);
-            if(state == GameState::AIWin) return 1;
-            else if(state == GameState::Draw) return 0;
+        int getUtility(std::vector<std::vector<BoardValue>>& board_table, Player ai_player) {
+            Winner winner =  board.evaluateWinner(board_table);
+            if((winner == Winner::X && ai_player == Player::AIX )|| (winner == Winner::O && ai_player == Player::AIO)) return 1;
+            else if(winner == Winner::Draw) return 0;
             return -1;
         }
         std::vector<std::vector<int>> getActions(std::vector<std::vector<BoardValue>>& board_table) {
@@ -390,9 +414,10 @@ class GameManager {
             }
             return result;
         }
-        std::vector<std::vector<BoardValue>> getResult(std::vector<std::vector<BoardValue>>& board_table, std::vector<int> action, Player player) {
-            board_table[action[0]][action[1]] = (player == Player::X || player == Player::AIX ? BoardValue::X : BoardValue::O);
-            return board_table;
+        std::vector<std::vector<BoardValue>> getResult(const std::vector<std::vector<BoardValue>>& board_table, std::vector<int>& action, Player player) {
+            auto next_board = board_table; 
+            next_board[action[0]][action[1]] = (player == Player::X || player == Player::AIX ? BoardValue::X : BoardValue::O);
+            return next_board;
         }
 };
 
