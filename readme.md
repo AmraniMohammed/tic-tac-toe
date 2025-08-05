@@ -37,7 +37,7 @@ TicTacToe/
 mkdir build && cd build
 cmake ..
 cmake --build .
-.\TicTacToe.exe      # On Windows
+.\src\TicTacToe.exe      # On Windows
 ```
 
 **Requirements:**
