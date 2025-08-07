@@ -12,6 +12,7 @@ class GameManager {
         Player first_player = Player::X;
         Player second_player = Player::O;
         GameMode game_mode = GameMode::TwoPlayers;
+        bool is_easy_mode = false;
     public:
         GameManager(Board& b);
 

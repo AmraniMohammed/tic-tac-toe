@@ -17,4 +17,7 @@ class AIPlayer {
         std::vector<std::vector<int>> getActions(const std::vector<std::vector<BoardValue>>& board_table);
         
         std::vector<std::vector<BoardValue>> getResult(const std::vector<std::vector<BoardValue>>& board_table, std::vector<int>& action, Player player);
+
+        std::vector<int> getBestMove(const std::vector<std::vector<BoardValue>>& board_table, Player current_player, Player human_player, Player ai_player, int depth = 10);
+
 };

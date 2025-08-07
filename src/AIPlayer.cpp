@@ -1,25 +1,38 @@
 #include <AIPlayer.h>
 #include <Board.h>
+#include <iostream>
 
 AIPlayer::AIPlayer(Board& b) : board(b){ };
 
 int AIPlayer::miniMaxAlgo(const std::vector<std::vector<BoardValue>>& board_table, int depth, Player current_player, Player human_player, Player ai_player) {
     if(isTerminal(board_table) || depth == 0) {
+        auto winner = board.evaluateWinner(board_table);
+        std::cout << "Terminal: winner=" << (winner == Winner::X ? "X"
+             : winner == Winner::O ? "O"
+             : winner == Winner::Draw ? "Draw"
+             : "None")
+          << " utility=" << getUtility(board_table, ai_player)
+          << " depth=" << depth << "\n";
         return getUtility(board_table, ai_player);
     }
+    Player opponent = (current_player == ai_player)
+                    ? human_player
+                    : ai_player;
     if(current_player == ai_player) {
         int max_eval = -2; //utility values are -1, 0, 1
         for(std::vector<int> action: getActions(board_table)){
-            int eval = miniMaxAlgo(getResult(board_table, action, current_player), depth - 1, human_player, human_player, ai_player);
+            int eval = miniMaxAlgo(getResult(board_table, action, current_player), depth - 1, opponent, human_player, ai_player);
             max_eval = std::max(max_eval, eval);
+            if(max_eval == 1) break;
         }
         return max_eval;
     }
     else {
         int min_eval = 2; //utility values are -1, 0, 1
         for(std::vector<int> action: getActions(board_table)){
-            int eval = miniMaxAlgo(getResult(board_table, action, current_player), depth - 1, ai_player, human_player, ai_player);
+            int eval = miniMaxAlgo(getResult(board_table, action, current_player), depth - 1, opponent, human_player, ai_player);
             min_eval = std::min(min_eval, eval);
+            if(min_eval == -1) break;
         }
         return min_eval;
     }
@@ -54,4 +67,22 @@ std::vector<std::vector<BoardValue>> AIPlayer::getResult(const std::vector<std::
     auto next_board = board_table; 
     next_board[action[0]][action[1]] = (player == Player::X || player == Player::AIX ? BoardValue::X : BoardValue::O);
     return next_board;
+}
+
+
+std::vector<int> AIPlayer::getBestMove(const std::vector<std::vector<BoardValue>>& board_table, Player current_player, Player human_player, Player ai_player, int depth) {
+    int best_score = -2;
+    std::vector<int> best_action;
+
+    for(auto action: getActions(board_table)) {
+        auto new_board = getResult(board_table, action, ai_player);
+
+        int score = miniMaxAlgo(new_board, depth, current_player, human_player, ai_player);
+
+        if(score > best_score) {
+            best_score = score;
+            best_action = action;
+        }
+    }
+    return best_action;
 }

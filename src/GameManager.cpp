@@ -1,4 +1,5 @@
 #include <GameManager.h>
+#include <AIPlayer.h>
 
 GameManager::GameManager(Board& b) : board(b){ };
 
@@ -131,24 +132,38 @@ bool GameManager::readPlayerMove(std::vector<int>& out_2d_position) {
 
 
 std::vector<int> GameManager::getAiMove() {
+    std::vector<int> result;
+    
+    if(is_easy_mode) {
+        std::vector<std::vector<int>> available_positions;
 
-    std::vector<std::vector<int>> available_positions;
+        available_positions = board.getAvailablePositions();
 
-    available_positions = board.getAvailablePositions();
+        // Define range
+        int min = 0;
+        int max = available_positions.size() - 1;
 
-    // Define range
-    int min = 0;
-    int max = available_positions.size() - 1;
+        // Initialize a random number generator
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<> distrib(min, max);
 
-    // Initialize a random number generator
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> distrib(min, max);
+        // Generate random number in the range [min, max]
+        int randomValue = distrib(gen);
+        result = available_positions[randomValue];
+    }
+    else {
+        AIPlayer ai_player(board);
 
-    // Generate random number in the range [min, max]
-    int randomValue = distrib(gen);
+        result = ai_player.getBestMove(board.getBoard(), second_player, first_player, second_player, 10);
 
-    return available_positions[randomValue];
+        if(result.size() == 2) std::cout << "Result is " << result[0] << ", " << result[1] << std::endl;
+        else std::cout << "Result size is not equal 2" << std::endl;
+    }
+
+    
+
+    return result;
 }
 
 
