@@ -4,6 +4,12 @@
 
 AIPlayer::AIPlayer(Board& b) : board(b){ };
 
+
+/**
+ * Minimax recursive search function.
+ * Evaluates all possible moves and returns the best achievable score
+ * depending on whether it's the AI's turn (maximizing) or human's turn (minimizing).
+ */
 int AIPlayer::miniMaxAlgo(const std::vector<std::vector<BoardValue>>& board_table, int depth, Player current_player, Player human_player, Player ai_player) {
     if(isTerminal(board_table) || depth == 0) {
         auto winner = board.evaluateWinner(board_table);
