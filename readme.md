@@ -1,95 +1,120 @@
-# Tic Tac Toe with AI (Sprint 1)
+# Tic Tac Toe with AI (Sprint 1 → Sprint 2)
 
-A C++ console-based Tic Tac Toe game featuring:
-
-- Two-player mode
-- One-player mode against an AI (random moves now; Minimax to be added)
-- Flexible board representation (3×3 for now; ready for N×N)
-- Clean separation of concerns: `Board`, `GameManager`, `AIPlayer`, shared types
+A C++ Tic Tac Toe project with a console playable game and an AI player.
+**Sprint 1 (console + AI basics)** is complete — work continues on **Sprint 2 (UI/UX improvements, more tests, CI)**.
 
 ---
 
-## 🏗️ Project Structure
+## Project overview
+
+- Two-player (local) mode
+- One-player vs AI (easy = random, hard = minimax)
+- Clean separation of concerns: `Board`, `GameManager`, `AIPlayer`, `GameTypes`
+- Console playable snapshot kept in branch `console`; use `main` for Sprint 2 work
+
+---
+
+## Repository layout
 
 ```
 TicTacToe/
 ├── include/
-│   ├── AIPlayer.h           # AI logic interface
-│   ├── Board.h              # Board representation & winner detection
-│   ├── GameManager.h        # Game flow & user interaction
-│   └── GameTypes.h          # Shared enums: Player, BoardValue, GameState, Winner, GameMode
-│
+│   ├── AIPlayer.h
+│   ├── Board.h
+│   ├── GameManager.h
+│   └── GameTypes.h
 ├── src/
-│   ├── AIPlayer.cpp         # AIPlayer implementation
-│   ├── Board.cpp            # Board methods implementation
-│   ├── GameManager.cpp      # GameManager implementation
-│   ├── main.cpp             # Entry point
-│   └── CMakeLists.txt       # Per-folder build rules
-│
-└── CMakeLists.txt           # Top-level CMake configuration
+│   ├── AIPlayer.cpp
+│   ├── Board.cpp
+│   ├── GameManager.cpp
+│   ├── main.cpp
+│   └── CMakeLists.txt
+├── tests/
+│   ├── test_main.cpp
+│   └── CMakeLists.txt
+└── CMakeLists.txt
 ```
 
 ---
 
-## ⚙️ Build & Run
+## Quick build & run (console)
 
 ```bash
-mkdir build && cd build
+# from repo root
+mkdir -p build
+cd build
 cmake ..
 cmake --build .
-.\src\TicTacToe.exe      # On Windows
+
+# run the executable
+./src/TicTacToe
+
+# Windows (PowerShell or cmd)
+.\src\TicTacToe.exe
 ```
 
-**Requirements:**
+**Requirements**
 
-- C++17 compiler
-- CMake 3.15+
-
----
-
-## 📝 Usage
-
-1. **Choose mode**
-
-   - Type `2` for Two-Players
-   - Type `1` for One-Player vs AI
-
-2. **Select starting symbol** (X or O)
-3. **Play**
-
-   - Enter a cell number (0–8) to make your move
-   - AI plays immediately after you in One-Player mode
-
-4. **Game ends** when someone wins or board is full
+- C++17-compatible compiler
+- CMake 3.31.5+
+- (Optional) GoogleTest for unit tests
 
 ---
 
-## 🚀 Sprint 1 Goals
+## Running tests (GoogleTest + CTest)
 
-- **Implement Minimax AI**
+Tests are configured under `tests/`:
 
-  - Unbeatable AI (hard mode)
-  - Alpha-Beta pruning optimization
-  - Configurable difficulty (Random vs Minimax)
+```bash
+cd build
+cmake --build .
+ctest --test-dir .
+```
 
-- **Refactor**
+## ✅ Sprint 1 — Completed
 
-  - Move AI logic entirely into `AIPlayer`
-  - Keep `GameManager` only for turn sequencing & I/O
-
-- **Write Unit Tests** for board evaluation and Minimax outcomes
-
----
-
-## 🛠️ Next Steps
-
-1. Start using `AIPlayer::miniMaxAlgo()` with core game.
-2. Expose difficulty levels in `GameManager`.
-3. Add unit tests (GoogleTest) for:
-
-   - `Board::evaluateWinner` on various boards
-   - `AIPlayer` produces optimal moves
+- Console game with core components: `Board`, `GameManager`, `AIPlayer`
+- Minimax implemented in `AIPlayer` (hard mode); random easy mode implemented
+- `Board::evaluateWinner()` with row/column/diagonal checks and draw detection
+- Basic unit test for `Board::evaluateWinner` (in `tests/`)
 
 ---
 
-_Thanks for checking out my Tic Tac Toe project!_
+## ⏭️ Sprint 2 – UI / Tests / CI (1–2 weeks)
+
+### Goals
+
+- Add a GUI (prototype)
+- Increase test coverage & add CI (GitHub Actions)
+- Stabilize and document public interfaces
+
+### Planned features
+
+- Replace console UI with GUI (tiles/buttons, click-to-play)
+- Highlight winning lines
+- Restart button & simple menu
+- Difficulty selector (easy / hard)
+- Unit tests for:
+
+  - All winner cases
+  - AI immediate win/block scenarios
+  - Integration tests
+
+- CI: build and run tests on push
+
+---
+
+## Development & branching recommendation
+
+- Keep `main` for active development (Sprint 2+).
+- Use `console` branch as a stable snapshot with the playable console release.
+
+---
+
+## Notes & TODOs
+
+- Consider adding alpha–beta pruning to `AIPlayer::miniMaxAlgo` for performance.
+- Add more unit tests for `AIPlayer` (best-move correctness in common scenarios).
+- Add CI (GitHub Actions/GitLab CI) to build and run tests automatically.
+
+---
