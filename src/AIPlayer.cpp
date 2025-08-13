@@ -77,7 +77,11 @@ std::vector<int> AIPlayer::getBestMove(const std::vector<std::vector<BoardValue>
     for(auto action: getActions(board_table)) {
         auto new_board = getResult(board_table, action, ai_player);
 
-        int score = miniMaxAlgo(new_board, depth, current_player, human_player, ai_player);
+        Player next_player = (ai_player == Player::AIX || ai_player == Player::AIO)
+                     ? human_player
+                     : ai_player;
+
+        int score = miniMaxAlgo(new_board, depth - 1, next_player, human_player, ai_player);
 
         if(score > best_score) {
             best_score = score;

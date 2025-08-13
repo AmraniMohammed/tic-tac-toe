@@ -35,10 +35,10 @@ GameState Board::evaluateState(Player current_player, const std::vector<std::vec
 };
 
 
-Winner Board::evaluateWinner(const std::vector<std::vector<BoardValue>>& board) {
-    int board_dim = board.size();
+Winner Board::evaluateWinner(const std::vector<std::vector<BoardValue>>& in_board) {
+    int board_dim = in_board.size();
     // Row win case check
-    for(auto row: board) {
+    for(auto row: in_board) {
         BoardValue check_value = row[0];
         int cnt = std::count_if(row.begin(), row.end(), [check_value](BoardValue val){return (check_value == val && val != BoardValue::Empty);});
         if(cnt == board_dim && check_value == BoardValue::X) return Winner::X;
@@ -47,11 +47,11 @@ Winner Board::evaluateWinner(const std::vector<std::vector<BoardValue>>& board) 
 
     // Column win case check
     for(int i = 0; i < board_dim; i++) {
-        BoardValue check_value = board[0][i];
+        BoardValue check_value = in_board[0][i];
         int cnt = 0;
         if(check_value == BoardValue::Empty) continue;
         for(int j = 0; j < board_dim; j++) {
-            if(board[j][i] == check_value) cnt++;
+            if(in_board[j][i] == check_value) cnt++;
         }
         if(cnt == board_dim && check_value == BoardValue::X) return Winner::X;
         else if(cnt == board_dim && check_value == BoardValue::O) return Winner::O;
@@ -63,16 +63,26 @@ Winner Board::evaluateWinner(const std::vector<std::vector<BoardValue>>& board) 
     
     
     for(int i = 0; i < board_dim; i++) {
-        diag_left.push_back(board[i][i]);
-        diag_right.push_back(board[i][board_dim - 1 - i]); //right column index = left + (n - 1)
+        diag_left.push_back(in_board[i][i]);
+        diag_right.push_back(in_board[i][board_dim - 1 - i]); //right column index = left + (n - 1)
     }
 
     int cnt_left = std::count_if(diag_left.begin(), diag_left.end(), [diag_left](BoardValue val){return (diag_left[0] == val && val != BoardValue::Empty);});
     int cnt_right = std::count_if(diag_right.begin(), diag_right.end(), [diag_right](BoardValue val){return (diag_right[0] == val && val != BoardValue::Empty);});
-    if((cnt_left == board_dim || cnt_right == board_dim) && (diag_left[0] == BoardValue::X || diag_right[0] == BoardValue::X)) return Winner::X;
-    else if((cnt_left == board_dim || cnt_right == board_dim) && (diag_left[0] == BoardValue::O || diag_right[0] == BoardValue::O)) return Winner::O;
 
-    if(isFull(board)) return Winner::Draw;
+    // Left-to-right diagonal
+    if (cnt_left == board_dim) {
+        if (diag_left[0] == BoardValue::X) return Winner::X;
+        else if (diag_left[0] == BoardValue::O) return Winner::O;
+    }
+
+    // Right-to-left diagonal
+    if (cnt_right == board_dim) {
+        if (diag_right[0] == BoardValue::X) return Winner::X;
+        else if (diag_right[0] == BoardValue::O) return Winner::O;
+    }
+
+    if(isFull(in_board)) return Winner::Draw;
 
     return Winner::None;
 }
@@ -110,8 +120,8 @@ std::vector<int> Board::get2DPos(int pos1D) {
 }
 
 
-bool Board::isEmptyAt(int row, int col, const std::vector<std::vector<BoardValue>>& board) const {
-    return board[row][col] == BoardValue::Empty;
+bool Board::isEmptyAt(int row, int col, const std::vector<std::vector<BoardValue>>& in_board) const {
+    return in_board[row][col] == BoardValue::Empty;
 }
 
 
@@ -163,10 +173,10 @@ bool Board::checkIfWin(const std::vector<std::vector<BoardValue>>& board_table) 
     return false;
 }
 
-bool Board::isFull(const std::vector<std::vector<BoardValue>>& board) {
+bool Board::isFull(const std::vector<std::vector<BoardValue>>& in_board) {
     for(int i = 0; i < board_size; i++) {
         for(int j = 0; j < board_size; j++) {
-            if(board[i][j] == BoardValue::Empty) return false;
+            if(in_board[i][j] == BoardValue::Empty) return false;
         }
     }
     return true;
