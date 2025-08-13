@@ -40,7 +40,7 @@ class GameManager {
         /**
          * @brief Runs the main game loop until the game is over.
          */
-        void run();
+        void update();
         
         /**
          * @brief Reads and validates the move from a human player.

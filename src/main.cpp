@@ -8,7 +8,7 @@ int main() {
     
     game_manager.setup();
     
-    game_manager.run();
+    game_manager.update();
 
     return 0;
 }

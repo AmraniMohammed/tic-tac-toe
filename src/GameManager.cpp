@@ -80,7 +80,7 @@ void GameManager::drawDivider() const {
     std::cout << std::string(board.getBoardSize() * 4 + (board.getBoardSize()-1)*1, '_') << "\n";
 }
 
-void GameManager::run() {
+void GameManager::update() {
     // Get Position to fill from player
     std::vector<int> position_2d;
     
