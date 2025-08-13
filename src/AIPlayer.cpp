@@ -13,12 +13,6 @@ AIPlayer::AIPlayer(Board& b) : board(b){ };
 int AIPlayer::miniMaxAlgo(const std::vector<std::vector<BoardValue>>& board_table, int depth, Player current_player, Player human_player, Player ai_player) {
     if(isTerminal(board_table) || depth == 0) {
         auto winner = board.evaluateWinner(board_table);
-        std::cout << "Terminal: winner=" << (winner == Winner::X ? "X"
-             : winner == Winner::O ? "O"
-             : winner == Winner::Draw ? "Draw"
-             : "None")
-          << " utility=" << getUtility(board_table, ai_player)
-          << " depth=" << depth << "\n";
         return getUtility(board_table, ai_player);
     }
     Player opponent = (current_player == ai_player)

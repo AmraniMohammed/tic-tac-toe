@@ -29,10 +29,25 @@ void GameManager::setup() {
                 std::cout<< "Please choose a valid starting player symbol by typing X or O\n";
             }
             else {
+                std::cout<< "Easy mode ? (y/n)\n";
+                std::string play_mode;
+                std::cin >> play_mode;
+                if(play_mode == "y" || play_mode == "Y") {
+                    is_easy_mode = true;
+                }
+                else if(play_mode == "n" || play_mode == "N") {
+                    is_easy_mode = false;
+                }
+                else {
+                    continue;
+                }
                 std::cout<< "Please choose a playing symbol by typing X or O\n";
             }
             std::string starting_player;
             std::cin >> starting_player;
+
+
+
 
             if(game_mode == GameMode::OnePlayer  && (starting_player == "X" || starting_player == "x")) {
                 current_player = Player::X;
@@ -156,9 +171,6 @@ std::vector<int> GameManager::getAiMove() {
         AIPlayer ai_player(board);
 
         result = ai_player.getBestMove(board.getBoard(), second_player, first_player, second_player, 10);
-
-        if(result.size() == 2) std::cout << "Result is " << result[0] << ", " << result[1] << std::endl;
-        else std::cout << "Result size is not equal 2" << std::endl;
     }
 
     
