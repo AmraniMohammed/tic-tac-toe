@@ -1,26 +1,19 @@
-add_library(Board STATIC Board.cpp)
-target_include_directories(Board
-    PUBLIC
-      ${PROJECT_SOURCE_DIR}/include
+add_subdirectory(Core)
+add_subdirectory(UI)
+
+add_executable(appTicTacToe main.cpp)
+
+target_link_libraries(appTicTacToe
+      PRIVATE Qt6::Core
+      PRIVATE Qt6::Quick
 )
 
-add_library(GameManager STATIC GameManager.cpp)
-target_include_directories(GameManager
-    PUBLIC
-      ${PROJECT_SOURCE_DIR}/include
-)
+target_link_libraries(appTicTacToe PRIVATE UIModule)
 
-add_library(AIPlayer STATIC AIPlayer.cpp)
-target_include_directories(AIPlayer
-    PUBLIC
-      ${PROJECT_SOURCE_DIR}/include
-)
-
-
-add_executable(TicTacToe main.cpp)
-target_link_libraries(TicTacToe
+target_link_libraries(appTicTacToe
     PRIVATE
       Board
       GameManager
       AIPlayer
+
 )

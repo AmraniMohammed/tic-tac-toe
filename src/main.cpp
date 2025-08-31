@@ -1,14 +1,20 @@
-#include <GameManager.h>
-#include <Board.h>
+#include <QGuiApplication>
+#include <QQmlApplicationEngine>
 
+int main(int argc, char *argv[])
+{
+    QGuiApplication app(argc, argv);
 
-int main() {   
-    Board board;
-    GameManager game_manager(board); 
-    
-    game_manager.setup();
-    
-    game_manager.update();
+    QQmlApplicationEngine engine;
+    const QUrl url(QStringLiteral("qrc:/TicTacToe/src/UI/Main.qml"));
+    QObject::connect(
+        &engine,
+        &QQmlApplicationEngine::objectCreationFailed,
+        &app,
+        []() { QCoreApplication::exit(-1); },
+        Qt::QueuedConnection);
+    // engine.loadFromModule("TicTacToe", "Main");
+       engine.load(url);
 
-    return 0;
+    return app.exec();
 }
