@@ -25,17 +25,23 @@ class GameManager {
         /**
          * @brief Initializes the game: choose mode, starting player, and update UI.
          */
-        void setup();
+        void setup(); // ========== Console mode function ==========
+
+        void setGameMode(GameMode gm);
+
+        void setPlayersSymbols(Player first, Player second);
+
+        void setDifficultyMode (bool is_easy);
 
         /**
          * @brief Prints the board state to the console.
          */
-        void updateBoardUI() const noexcept;
+        void updateBoardUI() const noexcept; // ========== Console mode function ==========
 
         /**
          * @brief Prints a horizontal divider between board rows.
          */
-        void drawDivider() const;
+        void drawDivider() const; // ========== Console mode function ==========
 
         /**
          * @brief Runs the main game loop until the game is over.
@@ -58,7 +64,7 @@ class GameManager {
         /**
          * @brief Displays the final result of the game.
          */
-        void showResult() const noexcept;
+        void showResult() const noexcept; // ========== Console mode function ==========
         
         /**
          * @brief Switches to the next player's turn.

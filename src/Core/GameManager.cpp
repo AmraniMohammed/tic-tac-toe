@@ -95,12 +95,21 @@ void GameManager::drawDivider() const {
     std::cout << std::string(board.getBoardSize() * 4 + (board.getBoardSize()-1)*1, '_') << "\n";
 }
 
+void GameManager::setGameMode(GameMode gm) { game_mode = gm; }
+
+void GameManager::setPlayersSymbols(Player first, Player second) {
+    first_player = first;
+    second_player = second;
+}
+
+void GameManager::setDifficultyMode(bool is_easy) { is_easy_mode = is_easy; }
+
 void GameManager::update() {
     // Get Position to fill from player
     std::vector<int> position_2d;
-    
+
     // Game loop
-    while(board.getState() == GameState::Continue){ 
+    while(board.getState() == GameState::Continue){
         if(game_mode == GameMode::OnePlayer && (current_player == Player::AIX || current_player == Player::AIO)) {
             position_2d = getAiMove();
         }
@@ -116,7 +125,7 @@ void GameManager::update() {
         // Draw
         updateBoardUI();
 
-        if(board.getState() == GameState::Continue) 
+        if(board.getState() == GameState::Continue)
             advanceTurn();
 
     };
@@ -127,7 +136,7 @@ void GameManager::update() {
 
 bool GameManager::readPlayerMove(std::vector<int>& out_2d_position) {
     std::cout << "\n" << "Player (" << board.getBoardSymbol(current_player) << ") role, please type the position you want to fill: ";
-    
+
     int pos;
     std::cin >> pos;
     if(std::cin.fail() || pos < 0 || pos > 8) {
@@ -148,7 +157,7 @@ bool GameManager::readPlayerMove(std::vector<int>& out_2d_position) {
 
 std::vector<int> GameManager::getAiMove() {
     std::vector<int> result;
-    
+
     if(is_easy_mode) {
         std::vector<std::vector<int>> available_positions;
 
@@ -173,7 +182,7 @@ std::vector<int> GameManager::getAiMove() {
         result = ai_player.getBestMove(board.getBoard(), second_player, first_player, second_player, 10);
     }
 
-    
+
 
     return result;
 }
