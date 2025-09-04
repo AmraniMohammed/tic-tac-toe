@@ -15,11 +15,10 @@ target_link_libraries(appTicTacToe
 
 target_link_libraries(appTicTacToe PRIVATE UIModule)
 
-target_link_libraries(appTicTacToe PRIVATE GameManagerWrapper)
+target_link_libraries(appTicTacToe PRIVATE GameManager)
 
 target_link_libraries(appTicTacToe
     PRIVATE
       Board
-      GameManager
       AIPlayer
 )

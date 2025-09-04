@@ -3,7 +3,6 @@
 #include <QQmlContext>
 #include "Board.h"
 #include "GameManager.h"
-#include "GameManagerWrapper.h"
 
 int main(int argc, char *argv[])
 {
@@ -11,11 +10,9 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine engine;
 
+    std::unique_ptr<Board> board;
 
-    Board board;
-    GameManager game_manager(board);
-
-    GameManagerWrapper wrapper(&game_manager);
+    GameManager wrapper(board.get());
     engine.rootContext()->setContextProperty("gameManager", &wrapper);
 
 

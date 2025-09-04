@@ -4,17 +4,6 @@ target_include_directories(Board
       ${PROJECT_SOURCE_DIR}/src/core/include
 )
 
-find_package(Qt6 REQUIRED COMPONENTS Core)
-
-add_library(GameManager STATIC GameManager.cpp
-
-
-)
-target_include_directories(GameManager
-    PUBLIC
-      ${PROJECT_SOURCE_DIR}/src/core/include
-)
-
 add_library(AIPlayer STATIC AIPlayer.cpp)
 target_include_directories(AIPlayer
     PUBLIC

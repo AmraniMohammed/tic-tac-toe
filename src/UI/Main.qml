@@ -3,7 +3,7 @@ import QtQuick
 Window {
     id: root
     width: 640
-    height: width * 1.6
+    height: 640
     visible: true
     title: qsTr("Tic Tac Toe Game")
 
@@ -32,7 +32,6 @@ Window {
                     color: "black"
                     width: 2
                 }
-
                 Text {
                     id: squareText
                     font.pixelSize: 50
@@ -42,18 +41,14 @@ Window {
                     }
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
+
+                    text: gameManager ? gameManager.board_table[index] : ""
                 }
 
                 MouseArea {
                     anchors.fill: parent
                     onClicked: {
-                        if(isPlayerX) {
-                            squareText.text = "X"
-                        }
-                        else {
-                           squareText.text = "O"
-                        }
-                        isPlayerX = !isPlayerX
+                        gameManager.update(index)
                         console.log("clicked in rectangle index : ", index)
                     }
                 }
