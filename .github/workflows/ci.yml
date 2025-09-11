@@ -22,9 +22,6 @@ jobs:
         with:
           version: "6.6.2"
           host: windows
-          arch: x64
-          modules: qtbase,qttools
-          offline: true
 
       # # 3. Install build tools (MSVC)
       # - name: Setup MSVC
