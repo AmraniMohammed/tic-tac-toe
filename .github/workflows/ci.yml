@@ -1,4 +1,3 @@
-# .github/workflows/ci-windows.yml
 name: C++ CI/CD with Qt (Windows)
 
 on:
@@ -23,35 +22,32 @@ jobs:
           version: "6.6.2"
           host: windows
 
-      # # 3. Install build tools (MSVC)
-      # - name: Setup MSVC
-      #   uses: actions/setup-msbuild@v1
-
-      # 4. Configure CMake
+      # 3. Configure CMake
       - name: Configure CMake
         run: cmake -S . -B build -G "Visual Studio 17 2022" -A x64
 
-      # 5. Build all targets (GUI + tests)
+      # 4. Build all targets (GUI + tests)
       - name: Build project
         run: cmake --build build --config Release --parallel
 
-      # 6. Run tests
+      # 5. Run tests
       - name: Run tests
         run: ctest --test-dir build
 
-      # # 7. List build folder
-      # - name: List build folder
-      #   run: dir build /s
-
-      # 8. Package executable
-      - name: Package executable
+      # 6. Deploy Qt DLLs
+      - name: Deploy Qt DLLs
         run: |
           mkdir release
           copy build\Release\appTicTacToe.exe release\
-          cd release
-          powershell Compress-Archive -Path appTicTacToe.exe -DestinationPath appTicTacToe.zip
+          "C:\Qt\6.6.2\msvc2019_64\bin\windeployqt.exe" release\appTicTacToe.exe
 
-      # 9. Upload artifact
+      # 7. Package executable
+      - name: Package executable
+        run: |
+          cd release
+          powershell Compress-Archive -Path * -DestinationPath appTicTacToe.zip
+
+      # 8. Upload artifact
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
