@@ -1,16 +1,45 @@
 #include <Board.h>
 
 
-Board::Board()
+Board::Board() : state(GameState::Continue), board_size(3), board(createBoard(3)) {}
+
+const std::vector<std::vector<BoardValue> >& Board::getBoard() const noexcept
 {
-    board = std::vector<std::vector<BoardValue>>(board_size, std::vector<BoardValue>(board_size, BoardValue::Empty));
+    return board;
 }
 
 GameState Board::getState() const noexcept {return state;};
 
-int Board::getBoardSize() const noexcept {return board_size;};
+int Board::getBoardSize() const noexcept {
+    if(board_size < 3) return 3;
+    return board_size;
+};
 
-void Board::setState(GameState new_state) noexcept {state = new_state;};
+void Board::setState(GameState new_state) noexcept {state = new_state;}
+
+void Board::setBoardSize(int new_board_size) noexcept
+{
+    board_size = new_board_size;
+    board = createBoard(board_size);
+}
+
+void Board::reset() noexcept
+{
+    board = createBoard(board_size);
+}
+
+std::vector<std::vector<BoardValue>> Board::createBoard(int dim)
+{
+    std::vector<std::vector<BoardValue>> new_board;
+    for(int i = 0; i < dim; i++) {
+        std::vector<BoardValue> line;
+        for(int j = 0; j < dim; j++) {
+            line.push_back(BoardValue::Empty);
+        }
+        new_board.push_back(line);
+    }
+    return new_board;
+};
 
 void Board::makeMove(std::vector<int> position_2d, Player player) {
     board[position_2d[0]][position_2d[1]] = getPlayerSymbol(player);
@@ -103,8 +132,8 @@ std::string Board::getBoardSymbol(std::vector<int> ids, std::string index) const
     switch (board[ids[0]][ids[1]]) {
         case BoardValue::X: return "X";
         case BoardValue::O: return "O";
+        default: return "";
     }
-    return index;
 }
 
 
@@ -116,7 +145,7 @@ std::string Board::getBoardSymbol(Player player) const {
 
 
 std::vector<int> Board::get2DPos(int pos1D) {
-    return { pos1D / board_size, pos1D % board_size };
+    return { pos1D / getBoardSize(), pos1D % getBoardSize() };
 }
 
 

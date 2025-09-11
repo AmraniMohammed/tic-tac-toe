@@ -1,146 +1,78 @@
 import QtQuick
+import QtQuick.Controls
 
-Window {
+ApplicationWindow {
     id: root
-    width: 640
-    height: 640
     visible: true
-    title: qsTr("Tic Tac Toe Game")
+    width: 1000
+    height: 900
 
-    property int board_size: 3
-    property bool isPlayerX: true
+    minimumWidth: 800
+    minimumHeight: 850
 
-    Grid {
-        anchors {
-            centerIn: parent
-        }
-
-        rows: root.board_size
-        columns: root.board_size
-        spacing: 0
-
-        Repeater {
-            model: root.board_size * root.board_size
-
-            Rectangle {
-                width: 100
-                height: 100
-
-                color: "transparent"
-
-                border {
-                    color: "black"
-                    width: 2
-                }
-                Text {
-                    id: squareText
-                    font.pixelSize: 50
-                    anchors {
-                        fill: parent
-                        margins: 10
-                    }
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-
-                    text: gameManager ? gameManager.board_table[index] : ""
-                }
-
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: {
-                        gameManager.update(index)
-                        console.log("clicked in rectangle index : ", index)
-                    }
-                }
-            }
-        }
-    }
+    title: "Tic Tac Toe Game"
 
     Rectangle {
-        id: backBtn
+        width: parent.width
+        height: parent.height
 
         anchors {
-            bottom: parent.bottom
-            left: parent.left
-            margins: 10
+            fill: parent
         }
 
-        width: 70
-        height: width/2
-
-        color: "transparent"
-        radius: 20
-
-        border {
-            color: "black"
-            width: 2
-        }
-
-        Text {
-            id: backBtnText
-            text: qsTr("Back")
-
-            font.pixelSize: 15
-
-            anchors {
-                fill: parent
-                margins: 10
-            }
-
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
-        }
-
-        MouseArea {
-            anchors.fill: parent
-            onClicked: {
-                console.log("Back to main window")
-            }
+        gradient: Gradient {
+            GradientStop { position: 0.0; color: "#3867d6" }
+            GradientStop { position: 0.33; color: "#4b7bec" }
+            GradientStop { position: 1.0; color: "#45aaf2" }
+            orientation : Gradient.Horizontal
         }
     }
 
 
-    Rectangle {
-        id: resetBtn
+    StackView {
+        id: pagesContainer
+        anchors.fill: parent
+        initialItem: Qt.resolvedUrl("qrc:/UI/Startup.qml")
 
-        anchors {
-            bottom: parent.bottom
-            right: parent.right
-            margins: 10
-        }
-
-        width: 70
-        height: width/2
-
-        color: "transparent"
-        radius: 20
-
-        border {
-            color: "black"
-            width: 2
-        }
-
-        Text {
-            id: resetBtnText
-            text: qsTr("Reset")
-
-            font.pixelSize: 15
-
-            anchors {
-                fill: parent
-                margins: 10
+        pushEnter: Transition {
+            PropertyAnimation {
+                property: "x"
+                from: pagesContainer.width
+                to: 0
+                duration: 300
+                easing.type: Easing.InOutQuad
             }
-
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
+        }
+        pushExit: Transition {
+            PropertyAnimation {
+                property: "x"
+                from: 0
+                to: -pagesContainer.width
+                duration: 300
+                easing.type: Easing.InOutQuad
+            }
+        }
+        popEnter: Transition {
+            PropertyAnimation {
+                property: "x"
+                from: -pagesContainer.width
+                to: 0
+                duration: 300
+                easing.type: Easing.InOutQuad
+            }
+        }
+        popExit: Transition {
+            PropertyAnimation {
+                property: "x"
+                from: 0
+                to: pagesContainer.width
+                duration: 300
+                easing.type: Easing.InOutQuad
+            }
         }
 
-        MouseArea {
-            anchors.fill: parent
-            onClicked: {
-                console.log("Reset Board")
-            }
+        Component.onCompleted: {
+            pagesContainer.push("qrc:/UI/Startup.qml", StackView.PushTransition)
         }
     }
-
 }

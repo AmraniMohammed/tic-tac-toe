@@ -1,15 +1,15 @@
 #include "GameManager.h"
 #include<QDebug>
 #include "AIPlayer.h"
-#include <limits>
-#include <random>
+#include <QRandomGenerator>
+#include <QVector>
+#include <QTimer>
 
 GameManager::GameManager(Board* b, QObject *parent)
     : QObject{parent}, board(b)
 {
     if (board) {
-        m_board_table = toVariantBoard(board->getBoard());
-        emit boardChanged();
+        setBoardTable(toVariantBoard(board->getBoard()));
     }
 }
 
@@ -26,9 +26,11 @@ void GameManager::setBoardTable(QVariantList bt)
     }
 }
 
-void GameManager::setGameMode(GameMode gm)
+void GameManager::setGameMode(bool is_two_player)
 {
-    game_mode = gm;
+    if(is_two_player) game_mode = GameMode::TwoPlayers;
+
+    else game_mode = GameMode::OnePlayer;
 }
 
 void GameManager::setPlayersSymbols(Player first, Player second)
@@ -42,12 +44,32 @@ void GameManager::setDifficultyMode(bool is_easy)
     is_easy_mode = is_easy;
 }
 
+void GameManager::makeMove(QVariantList position_2d)
+{
+    // Game logic
+    board->makeMove(toVectorInt(position_2d), current_player);
+    board->setState(board->evaluateState(current_player, board->getBoard()));
+
+    // Update UI
+    setBoardTable(toVariantBoard(board->getBoard()));
+}
+
+void GameManager::setup(int new_board_size, int new_ai_depth_value, bool is_two_player, bool is_x, bool is_easy)
+{
+    if(new_board_size != board_size) setBoardSize(new_board_size);
+
+    if(new_ai_depth_value != depth) setDepth(new_ai_depth_value);
+
+    setGameMode(is_two_player);
+
+    setFirstSecondPlayer(is_x);
+
+    is_easy_mode = is_easy;
+}
+
 bool GameManager::checkPlayerMove(QVariantList position)
 {
-    if(board->isEmptyAt(position[0].toInt(), position[1].toInt(), board->getBoard())) {
-        return true;
-    }
-    return false;
+    return board->isEmptyAt(position[0].toInt(), position[1].toInt(), board->getBoard());
 }
 
 QVariantList GameManager::getAiMove(int depth)
@@ -55,22 +77,22 @@ QVariantList GameManager::getAiMove(int depth)
     QVariantList result;
 
     if(is_easy_mode) {
-        QVariantList available_positions;
-
-        available_positions = toVariantList2D(board->getAvailablePositions());
+        QVector<QVector<int>> available_positions = toQVector2D(board->getAvailablePositions());
 
         // Define range
         int min = 0;
         int max = available_positions.size() - 1;
 
-        // Initialize a random number generator
-        std::random_device rd;
-        std::mt19937 gen(rd());
-        std::uniform_int_distribution<> distrib(min, max);
+        if (max >= 0) {
+            // Generate random index in the range [min, max]
+            int randomIndex = QRandomGenerator::global()->bounded(min, max + 1);
 
-        // Generate random number in the range [min, max]
-        int randomValue = distrib(gen);
-        result = available_positions[randomValue].toList();
+            int row = available_positions[randomIndex][0];
+            int col = available_positions[randomIndex][1];
+
+            result.append(row);
+            result.append(col);
+        }
     }
     else {
         AIPlayer ai_player(*board);
@@ -105,32 +127,115 @@ void GameManager::advanceTurn() noexcept
 
 void GameManager::update(int position_1d)
 {
-    QVariantList position_2d = toVariantList(board->get2DPos(position_1d));
+    QVariantList position_2d;
+
+    if(position_1d >= 0) {
+        position_2d = toVariantList(board->get2DPos(position_1d));
+    }
+
     // Game loop
     if(board->getState() == GameState::Continue){
         if(game_mode == GameMode::OnePlayer && (current_player == Player::AIX || current_player == Player::AIO)) {
-            position_2d = getAiMove();
+            position_2d = getAiMove(depth);
         }
         else {
             if(!checkPlayerMove(position_2d)) return;
         }
-
-        // Game logic
-        board->makeMove(toVectorInt(position_2d), current_player);
-        board->setState(board->evaluateState(current_player, board->getBoard()));
-
-        // Update UI
-        setBoardTable(toVariantBoard(board->getBoard()));
+        makeMove(position_2d);
     }
     if(board->getState() == GameState::Continue){
         advanceTurn();
+
+        if(game_mode == GameMode::OnePlayer && (current_player == Player::AIX || current_player == Player::AIO)) {
+            QTimer::singleShot(1000, [this]() {
+                update(-1); // Ai compute his move in getAiMove line
+            });
+        }
     }
     else {
-        //Show result
-        qWarning() << "Game Over !!!!";
+        QString result;
+
+        if(board->getState() == GameState::Draw) {
+            result = "Draw";
+        } else if(board->getState() == GameState::PlayerXWin) {
+            result = "Player X Won";
+        }
+        else if(board->getState() == GameState::PlayerOWin) {
+            result = "Player O Won";
+        }
+        emit gameOver("Game Over: " + result);
     }
 
     //showResult();
+}
+
+void GameManager::reset()
+{
+    board->setState(GameState::Continue);
+    board->reset();
+    setBoardTable(toVariantBoard(board->getBoard()));
+    current_player = first_player;
+}
+
+void GameManager::setBoardSize(int new_board_size) noexcept
+{
+    board->setBoardSize(new_board_size);
+    board_size = new_board_size;
+    setBoardTable(toVariantBoard(board->getBoard()));
+}
+
+void GameManager::setDepth(int new_depth)
+{
+    depth = new_depth;
+}
+
+void GameManager::setFirstSecondPlayer(bool is_x)
+{
+    if(is_x) {
+        if(game_mode == GameMode::OnePlayer) {
+            first_player = Player::X;
+            second_player = Player::AIO;
+            current_player = first_player;
+        }
+        else {
+            first_player = Player::X;
+            second_player = Player::O;
+            current_player = first_player;
+        }
+    }
+    else {
+        if(game_mode == GameMode::OnePlayer) {
+            first_player = Player::O;
+            second_player = Player::AIX;
+            current_player = first_player;
+        }
+        else {
+            first_player = Player::O;
+            second_player = Player::X;
+            current_player = first_player;
+        }
+    }
+}
+
+void GameManager::logCurrentPlayer() const
+{
+    if(current_player == Player::X) {
+        qWarning() << "Current player is X";
+    }
+    else if(current_player == Player::O) {
+        qWarning() << "Current player is O";
+    }
+    else if(current_player == Player::AIO) {
+        qWarning() << "Current player is AIO";
+    }
+    else if(current_player == Player::AIX) {
+        qWarning() << "Current player is AIX";
+    }
+}
+
+int GameManager::getBoardSize() const
+{
+    return board_size;
 }
 
 QVariantList GameManager::get2DPos(int pos1D) const
@@ -168,13 +273,15 @@ QVariantList GameManager::toVariantList2D(const std::vector<std::vector<int> > &
 {
     QVariantList outer_list;
 
+    qWarning() << "Vec2 size is " << vec2d.size();
+
     for (const auto& inner : vec2d) {
-        QVariantList inner_list;
+        QVariantList line;
 
         for (int v : inner) {
-            inner_list.append(v);
+            line.append(v);
         }
-        outer_list.append(inner_list);
+        outer_list.append(line.toList());
     }
 
     return outer_list;
@@ -217,4 +324,22 @@ QVariantList GameManager::toVariantBoard(std::vector<std::vector<BoardValue> > i
 
     return outer_board;
 
+}
+
+QVector<QVector<int> > GameManager::toQVector2D(const std::vector<std::vector<int> > &vec2d)
+{
+    QVector<QVector<int>> result;
+
+    for (const auto& inner : vec2d) {
+        if (inner.size() != 2) {
+            qWarning() << "Inner vector does not have 2 elements!";
+            continue;
+        }
+        QVector<int> row;
+        row.append(inner[0]);
+        row.append(inner[1]);
+        result.append(row);
+    }
+
+    return result;
 }

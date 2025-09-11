@@ -15,7 +15,7 @@ class Board {
         Board();
 
         // Returns a const reference to the board
-        const std::vector<std::vector<BoardValue>>& getBoard() const noexcept {return board;};
+        const std::vector<std::vector<BoardValue>>& getBoard() const noexcept;
 
         // Returns the current game state
         GameState getState() const noexcept;
@@ -25,6 +25,19 @@ class Board {
 
         // Sets the current game state
         void setState(GameState new_state) noexcept;
+
+        // Sets the current game state
+        void setBoardSize(int new_board_size) noexcept;
+
+        // Sets the current game state
+        void reset() noexcept;
+
+        /**
+         * Places a player's symbol at the given 2D position on the board
+         * @param position_2d 2D coordinates {row, column}
+         * @param player The player making the move
+         */
+        std::vector<std::vector<BoardValue>> createBoard(int dim);
 
         /**
          * Places a player's symbol at the given 2D position on the board

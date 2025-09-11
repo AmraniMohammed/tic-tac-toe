@@ -1,5 +1,12 @@
 <RCC>
     <qresource prefix="/">
         <file>UI/Main.qml</file>
+        <file>UI/Game.qml</file>
+        <file>Resources/icons/agents.png</file>
+        <file>Resources/icons/people.png</file>
+        <file>Resources/icons/play-button.png</file>
+        <file>Resources/icons/setting.png</file>
+        <file>Resources/icons/game_icon.png</file>
+        <file>UI/Startup.qml</file>
     </qresource>
 </RCC>
