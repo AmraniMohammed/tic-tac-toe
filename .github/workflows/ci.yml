@@ -18,12 +18,12 @@ jobs:
 
       # 2. Install Qt 6
       - name: Install Qt
-        uses: jurplel/install-qt-action@v2
+        uses: jurplel/install-qt-action@v4
         with:
           version: "6.6.2"
           host: windows
           arch: x64
-          modules: qtbase,qttools # only the ones you need
+          modules: qtbase,qttools
           offline: true
 
       # # 3. Install build tools (MSVC)
