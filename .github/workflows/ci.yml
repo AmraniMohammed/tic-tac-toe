@@ -39,9 +39,9 @@ jobs:
       - name: Run tests
         run: ctest --test-dir build
 
-      # 7. List build folder
-      - name: List build folder
-        run: dir build /s
+      # # 7. List build folder
+      # - name: List build folder
+      #   run: dir build /s
 
       # 8. Package executable
       - name: Package executable
