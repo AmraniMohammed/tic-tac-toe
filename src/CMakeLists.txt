@@ -8,6 +8,10 @@ add_executable(appTicTacToe main.cpp
       resources.qrc
 )
 
+set_target_properties(appTicTacToe PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
+)
+
 target_link_libraries(appTicTacToe
       PRIVATE Qt6::Core
       PRIVATE Qt6::Quick
