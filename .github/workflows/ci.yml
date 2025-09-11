@@ -1,4 +1,5 @@
-name: C++ CI
+# .github/workflows/ci.yml
+name: C++ CI with Qt
 
 on:
   push:
@@ -14,14 +15,25 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      # Install Qt 6
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v2
+        with:
+          version: "6.6.2" # your Qt version
+          host: linux
+
+      # Install build tools
       - name: Install dependencies
         run: sudo apt-get update && sudo apt-get install -y cmake g++ make
 
+      # Configure CMake (Qt paths should now be detected)
       - name: Configure CMake
         run: cmake -S . -B build
 
+      # Build all targets (GUI + tests)
       - name: Build project
-        run: cmake --build build
+        run: cmake --build build --parallel
 
+      # Run tests
       - name: Run tests
         run: ctest --test-dir build
