@@ -1,4 +1,5 @@
-name: C++ CI/CD with Qt
+# .github/workflows/ci-windows.yml
+name: C++ CI/CD with Qt (Windows)
 
 on:
   push:
@@ -8,46 +9,51 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
+      # 1. Checkout code
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Install Qt 6
+      # 2. Install Qt 6
       - name: Install Qt
         uses: jurplel/install-qt-action@v2
         with:
           version: "6.6.2"
-          host: linux
+          host: windows
 
-      # Install build tools
-      - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install -y cmake g++ make zip
+      # 3. Install build tools (MSVC)
+      - name: Setup MSVC
+        uses: actions/setup-msbuild@v1
 
-      # Configure CMake
+      # 4. Configure CMake
       - name: Configure CMake
-        run: cmake -S . -B build
+        run: cmake -S . -B build -G "Visual Studio 17 2022" -A x64
 
-      # Build all targets
+      # 5. Build all targets (GUI + tests)
       - name: Build project
-        run: cmake --build build --parallel
+        run: cmake --build build --config Release --parallel
 
-      # Run tests
+      # 6. Run tests
       - name: Run tests
-        run: ctest --test-dir build
+        run: ctest --test-dir build --config Release
 
-      # Package the executable
+      # 7. List build folder
+      - name: List build folder
+        run: dir build /s
+
+      # 8. Package executable
       - name: Package executable
         run: |
-          mkdir -p release
-          cp build/appTicTacToe release/
+          mkdir release
+          copy build\Release\appTicTacToe.exe release\
           cd release
-          zip -r appTicTacToe .zip appTicTacToe
+          powershell Compress-Archive -Path appTicTacToe.exe -DestinationPath appTicTacToe.zip
 
-      # Upload as workflow artifact
+      # 9. Upload artifact
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: TicTacToe-executable
-          path: release/appTicTacToe.zip
+          path: release\appTicTacToe.zip
