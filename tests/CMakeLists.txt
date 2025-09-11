@@ -21,7 +21,6 @@ add_executable(TestMain test_main.cpp)
 target_link_libraries(TestMain
     PRIVATE
       Board
-      GameManager
       AIPlayer
       gtest_main
 )
