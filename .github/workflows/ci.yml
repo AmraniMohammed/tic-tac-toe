@@ -37,7 +37,7 @@ jobs:
 
       # 6. Run tests
       - name: Run tests
-        run: ctest --test-dir build --config Release
+        run: ctest --test-dir build
 
       # 7. List build folder
       - name: List build folder
