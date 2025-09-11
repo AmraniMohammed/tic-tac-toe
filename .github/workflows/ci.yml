@@ -1,5 +1,4 @@
-# .github/workflows/ci.yml
-name: C++ CI with Qt
+name: C++ CI/CD with Qt
 
 on:
   push:
@@ -19,21 +18,36 @@ jobs:
       - name: Install Qt
         uses: jurplel/install-qt-action@v2
         with:
-          version: "6.6.2" # your Qt version
+          version: "6.6.2"
           host: linux
 
       # Install build tools
       - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install -y cmake g++ make
+        run: sudo apt-get update && sudo apt-get install -y cmake g++ make zip
 
-      # Configure CMake (Qt paths should now be detected)
+      # Configure CMake
       - name: Configure CMake
         run: cmake -S . -B build
 
-      # Build all targets (GUI + tests)
+      # Build all targets
       - name: Build project
         run: cmake --build build --parallel
 
       # Run tests
       - name: Run tests
         run: ctest --test-dir build
+
+      # Package the executable
+      - name: Package executable
+        run: |
+          mkdir -p release
+          cp build/TicTacToe release/
+          cd release
+          zip -r TicTacToe.zip TicTacToe
+
+      # Upload as workflow artifact
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: TicTacToe-executable
+          path: release/TicTacToe.zip
