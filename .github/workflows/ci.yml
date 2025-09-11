@@ -47,7 +47,7 @@ jobs:
 
       # Upload as workflow artifact
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: TicTacToe-executable
           path: release/TicTacToe.zip
