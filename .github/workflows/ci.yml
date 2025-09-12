@@ -1,5 +1,9 @@
 name: C++ CI/CD with Qt (Windows)
 
+permissions:
+  contents: write
+  packages: write
+
 on:
   push:
     branches: [main]
