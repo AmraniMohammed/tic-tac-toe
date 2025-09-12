@@ -55,3 +55,12 @@ jobs:
         with:
           name: TicTacToe-executable
           path: release\appTicTacToe.zip
+
+      # 9. Create GitHub Release and upload the packaged zip
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        if: github.ref == 'refs/heads/main'
+        with:
+          files: release/appTicTacToe.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
