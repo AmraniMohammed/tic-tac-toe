@@ -1,7 +1,7 @@
-# Tic Tac Toe with AI (Sprint 2)
+# Tic Tac Toe with AI (Sprint 3 – Planning)
 
 A C++ Tic Tac Toe project with Qt/QML UI and AI player.
-**Sprint 1 (console + AI basics)** is complete — work continues on **Sprint 2 (UI/UX improvements, wrapper, more tests, CI)**.
+**Sprint 2 (UI/UX, GameManager wrapper, CI, unit tests)** is complete — work continues in **Sprint 3 (enhancements & optional features)**.
 
 ---
 
@@ -13,6 +13,7 @@ A C++ Tic Tac Toe project with Qt/QML UI and AI player.
 - Core game logic (`Board`, `AIPlayer`) separated from UI
 - `GameManager` wrapper exposes Core to QML
 - Console version snapshot maintained in branch `console`
+- CI/CD pipeline automatically builds, tests, and packages the app
 
 ---
 
@@ -23,31 +24,33 @@ TicTacToe/
 ├── src/
 │   ├── main.cpp
 │   ├── resources.qrc
-│   ├── Core/                     # Pure C++ game logic
+│   ├── Core/
 │   │   ├── include/
 │   │   │   ├── AIPlayer.h
 │   │   │   ├── Board.h
 │   │   │   └── GameTypes.h
 │   │   ├── AIPlayer.cpp
 │   │   └── Board.cpp
-│   ├── Wrapper/                  # QObject wrapper for QML
+│   ├── Wrapper/
 │   │   ├── GameManager.h
 │   │   ├── GameManager.cpp
 │   │   └── GameTypesWrapper.h
-│   └── UI/                       # QML interface
+│   └── UI/
 │       └── Main.qml
+│       └── Startup.qml
+│       └── Game.qml
 ├── tests/
 │   ├── test_main.cpp
 │   └── CMakeLists.txt
-└── CMakeLists.txt                # Top-level CMake
+└── CMakeLists.txt
 ```
 
 ---
 
 ## Quick Build & Run (Qt6 QML UI)
 
-1. Make sure Qt 6 is installed with your preferred compiler (MSVC or MinGW).
-2. Open a terminal (cmd/PowerShell) or Developer Command Prompt for your compiler.
+1. Ensure Qt 6 is installed with your preferred compiler (MSVC or MinGW).
+2. Open terminal or Developer Command Prompt.
 3. Create and enter a build folder:
 
 ```bash
@@ -55,14 +58,12 @@ mkdir build
 cd build
 ```
 
-4. Run CMake and provide the Qt6 path (adjust for your Qt version and compiler):
+4. Run CMake and provide the Qt6 path:
 
 ```bash
 cmake .. -DCMAKE_PREFIX_PATH="C:/Qt/6.X.X/mingw_64/lib/cmake"
 cmake --build .
 ```
-
-If you use MSVC 2022, set CMAKE_PREFIX_PATH="C:/Qt/6.9.1/msvc2022_64_64/lib/cmake" instead.
 
 5. Run the app:
 
@@ -70,18 +71,11 @@ If you use MSVC 2022, set CMAKE_PREFIX_PATH="C:/Qt/6.9.1/msvc2022_64_64/lib/cmak
 ./src/appTicTacToe.exe
 ```
 
-**Requirements**
-
-- C++17-compatible compiler
-- CMake 3.31.5+
-- Qt 6+ (with QML support)
-- (Optional) GoogleTest for unit tests
+**Requirements:** C++17 compiler, CMake 3.31+, Qt 6+, (Optional) GoogleTest.
 
 ---
 
 ## Running tests (GoogleTest + CTest)
-
-Tests are configured under `tests/`:
 
 ```bash
 cd build
@@ -93,51 +87,45 @@ ctest --test-dir .
 
 ## ✅ Sprint 1 — Completed
 
-- Console game with core components: `Board`, `GameManager`, `AIPlayer`
-- Minimax implemented in `AIPlayer` (hard mode); random easy mode implemented
-- `Board::evaluateWinner()` with row/column/diagonal checks and draw detection
-- Basic unit test for `Board::evaluateWinner` (in `tests/`)
+- Console version: core components (`Board`, `GameManager`, `AIPlayer`)
+- Minimax AI implemented (hard mode); random AI (easy mode)
+- Winner evaluation with draw detection
+- Basic unit test for `Board::evaluateWinner()`
 
 ---
 
-## ⏭️ Sprint 2 – Qt UI, Wrapper & Tests (1–2 weeks)
+## ✅ Sprint 2 — Completed
 
-### Goals
+- Qt/QML GUI fully implemented
+- `GameManager` QObject wrapper for QML
+- Increased test coverage (all winner cases + AI scenarios)
+- CI/CD: automatic build, test, and packaging
+- Executable packaged as `.zip` artifact
 
-- Add a Qt/QML GUI
-- Create a `GameManager` QObject wrapper
-- Increase test coverage & add CI
-- Stabilize and document public interfaces
+**New features in Sprint 2:**
 
-### Planned features
-
-- GUI: tiles/buttons, click-to-play
-
-- Highlight winning lines
-
-- Restart button & simple menu
-
-- Difficulty selector (easy / hard)
-
-- Unit tests for:
-
-  - All winner cases
-  - AI immediate win/block scenarios
-  - Integration tests
-
-- CI: build and run tests on push
+- GUI: interactive tiles/buttons, restart button, menu
+- Difficulty selector (easy/hard)
+- Highlight winning line (UI)
+- Unit tests & integration tests
+- CI/CD pipeline (GitHub Actions)
 
 ---
 
-## Development & branching recommendation
+## ⏭️ Sprint 3 — Enhancements & Optional Features
 
-- Keep `main` for active development (Sprint 2+)
-- Use `console` branch as a stable snapshot with the playable console release
+**Goals / planned features:**
+
+- Add screenshots/video demo to README
+- Refine UI for end-of-game highlight and UX improvements
+- Optional: Add alpha–beta pruning to `AIPlayer::miniMaxAlgo` for optimization
+- Optional: visual polish, animations, or sounds
 
 ---
 
-## Notes & TODOs
+## Future TODOs / Nice-to-Have Features
 
-- Consider adding alpha–beta pruning to `AIPlayer::miniMaxAlgo` for performance
-- Add more unit tests for `AIPlayer` (best-move correctness in common scenarios)
-- Add CI (GitHub Actions/GitLab CI) to build and run tests automatically
+- Networking support for two-player mode over LAN or Internet
+- Score tracking or game replay system
+
+---
