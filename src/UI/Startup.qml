@@ -22,9 +22,9 @@ Page {
         }
 
         gradient: Gradient {
-            GradientStop { position: 0.0; color: "#3867d6" }
-            GradientStop { position: 0.33; color: "#4b7bec" }
-            GradientStop { position: 1.0; color: "#45aaf2" }
+            GradientStop { position: 0.0; color: "#374151" }
+            GradientStop { position: 0.33; color: "#475569" }
+            GradientStop { position: 1.0; color: "#1d4ed8" }
             orientation : Gradient.Horizontal
         }
 
@@ -32,19 +32,18 @@ Page {
             width: parent.width * 0.55
             height: parent.height * 0.8
 
-            color: "#33ffffff"
+            color: "#1Affffff"
 
             anchors {
                 centerIn: parent
             }
 
             border {
-                color: "#c2c2c2"
-                width: 1
+                color: "#66c2c2c2"
+                width: 2
             }
 
-
-            radius : 10
+            radius : 20
 
             Column {
                 id: container
@@ -114,7 +113,7 @@ Page {
 
                     Row {
                         width: parent.width
-                        spacing: 20
+                        spacing: 50
                         anchors {
                             left: parent.left
                             right: parent.right
@@ -127,6 +126,7 @@ Page {
                             height: 80
                             color: is_two_player ? "#3b82f6" : "#66ffffff"
                             radius : 10
+
 
                             Column {
                                 spacing: 8
@@ -152,8 +152,6 @@ Page {
                                     color: "white"
                                 }
                             }
-
-
 
                             MouseArea {
                                 anchors.fill: parent
@@ -231,7 +229,7 @@ Page {
                         id: boardSizeSlider
                         width: parent.width * 0.8
                         from: 3
-                        to: 10
+                        to: 8
                         value: 3
                         stepSize: 1
                         anchors.horizontalCenter: parent.horizontalCenter
@@ -293,7 +291,7 @@ Page {
 
                     Row {
                         width: parent.width
-                        spacing: 20
+                        spacing: 50
                         anchors {
                             left: parent.left
                             right: parent.right
@@ -376,7 +374,7 @@ Page {
 
                     Row {
                         width: parent.width
-                        spacing: 20
+                        spacing: 50
                         anchors {
                             left: parent.left
                             right: parent.right

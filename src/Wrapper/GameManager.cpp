@@ -10,12 +10,30 @@ GameManager::GameManager(Board* b, QObject *parent)
 {
     if (board) {
         setBoardTable(toVariantBoard(board->getBoard()));
+        setGameState(3);
     }
+}
+
+QString GameManager::getCurrent_player() const
+{
+    if(current_player == Player::X || current_player == Player::AIX) return "X";
+    return "O";
+}
+
+QString GameManager::getGame_mode() const
+{
+    if(game_mode == GameMode::OnePlayer) return "Player vs AI";
+    return "Player vs Player";
 }
 
 QVariantList GameManager::board_table() const
 {
     return m_board_table;
+}
+
+int GameManager::game_state() const
+{
+    return m_game_state;
 }
 
 void GameManager::setBoardTable(QVariantList bt)
@@ -25,6 +43,15 @@ void GameManager::setBoardTable(QVariantList bt)
         emit boardChanged();
     }
 }
+
+void GameManager::setGameState(int new_game_state)
+{
+    if (m_game_state != new_game_state) {
+        m_game_state = new_game_state;
+        emit boardChanged();
+    }
+}
+
 
 void GameManager::setGameMode(bool is_two_player)
 {
@@ -147,25 +174,35 @@ void GameManager::update(int position_1d)
         advanceTurn();
 
         if(game_mode == GameMode::OnePlayer && (current_player == Player::AIX || current_player == Player::AIO)) {
-            QTimer::singleShot(1000, [this]() {
+            QTimer::singleShot(300, [this]() {
                 update(-1); // Ai compute his move in getAiMove line
             });
         }
     }
     else {
-        QString result;
+        QString result = "Continue";
+        GameState current_state = board->getState();
+        int new_state = 3;
 
-        if(board->getState() == GameState::Draw) {
+
+
+        if(current_state == GameState::Draw) {
             result = "Draw";
-        } else if(board->getState() == GameState::PlayerXWin) {
+            new_state = 2;
+        } else if(current_state == GameState::PlayerXWin) {
             result = "Player X Won";
+            new_state = 0;
         }
-        else if(board->getState() == GameState::PlayerOWin) {
+        else if(current_state == GameState::PlayerOWin) {
             result = "Player O Won";
+            new_state = 1;
         }
         emit gameOver("Game Over: " + result);
+
+        setGameState(new_state);
     }
 
+    emit gameStateChanged();
     //showResult();
 }
 
@@ -175,6 +212,7 @@ void GameManager::reset()
     board->reset();
     setBoardTable(toVariantBoard(board->getBoard()));
     current_player = first_player;
+    setGameState(3);
 }
 
 void GameManager::setBoardSize(int new_board_size) noexcept
@@ -246,17 +284,6 @@ QVariantList GameManager::get2DPos(int pos1D) const
         pos2D.append(pos);
 
     return pos2D;
-}
-
-QString GameManager::getCellValue(int position_1d) const
-{
-    std::vector<int> position_2d = board->get2DPos(position_1d);
-    std::vector<std::vector<BoardValue>> board_tb = board->getBoard();
-    BoardValue board_value = board_tb[position_2d.at(0)][position_2d.at(1)];
-
-    if(board_value == BoardValue::X) return "X";
-    else if(board_value == BoardValue::O) return "O";
-    return "";
 }
 
 QVariantList GameManager::toVariantList(const std::vector<int> &vec)

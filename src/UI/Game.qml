@@ -17,147 +17,319 @@ Page {
         }
 
         gradient: Gradient {
-            GradientStop { position: 0.0; color: "#3867d6" }
-            GradientStop { position: 0.33; color: "#4b7bec" }
-            GradientStop { position: 1.0; color: "#45aaf2" }
+            GradientStop { position: 0.0; color: "#374151" }
+            GradientStop { position: 0.33; color: "#475569" }
+            GradientStop { position: 1.0; color: "#1d4ed8" }
             orientation : Gradient.Horizontal
         }
 
-        Grid {
+        Rectangle {
+            id: gameContainerBg
+
+            width: gameManager ? ((gameManager.getBoardSize() < 5) ? parent.width * 0.8 : parent.width * 0.95) : parent.width * 0.8
+            height: gameManager ? ((gameManager.getBoardSize() < 5) ? parent.height * 0.8 : parent.height * 0.95) : parent.height * 0.8
+
+            color: "#1Affffff"
+
             anchors {
                 centerIn: parent
             }
 
-            rows: gameManager ? gameManager.getBoardSize() : 3
-            columns: gameManager ? gameManager.getBoardSize() : 3
-            spacing: 0
+            border {
+                color: "#33c2c2c2"
+                width: 2
+            }
 
-            Repeater {
-                model: gameManager ? gameManager.getBoardSize() * gameManager.getBoardSize() : 3
+            radius : 10
 
-                Rectangle {
-                    width: 100
-                    height: 100
+            Rectangle {
+                id: gridContainer
+                width: gridBoard.implicitWidth + 40
+                height: gridBoard.implicitHeight + 40
 
-                    color: "transparent"
+                color: "#1Affffff"
 
-                    border {
-                        color: "black"
-                        width: 2
+                anchors {
+                    centerIn: parent
+                }
+
+                border {
+                    color: "#33c2c2c2"
+                    width: 2
+                }
+
+                radius : 10
+
+                Grid {
+                    id: gridBoard
+                    anchors {
+                        centerIn: parent
                     }
-                    Text {
-                        id: squareText
-                        font.pixelSize: 50
-                        anchors {
-                            fill: parent
-                            margins: 10
+
+                    rows: gameManager ? gameManager.getBoardSize() : 3
+                    columns: gameManager ? gameManager.getBoardSize() : 3
+                    spacing: 10
+
+                    Repeater {
+                        model: gameManager ? gameManager.getBoardSize() * gameManager.getBoardSize() : 3
+
+                        Rectangle {
+                            width: gameManager ? ((gameManager.getBoardSize() < 5) ? 90 : 65) : 90
+                            height: gameManager ? ((gameManager.getBoardSize() < 5) ? 90 : 65) : 90
+
+                            color: "#1Affffff"
+
+                            border {
+                                color: "#33c2c2c2"
+                                width: 2
+                            }
+
+                            radius : 10
+
+                            Text {
+                                id: squareText
+                                font.pixelSize: 40
+                                font.bold: true
+
+                                color: "white"
+
+                                anchors {
+                                    fill: parent
+                                    margins: 10
+                                }
+                                horizontalAlignment: Text.AlignHCenter
+                                verticalAlignment: Text.AlignVCenter
+
+                                text: gameManager ? gameManager.board_table[index] : ""
+                            }
+
+                            MouseArea {
+                                anchors.fill: parent
+                                onClicked: {
+                                    gameManager.update(index)
+                                }
+                            }
                         }
+                    }
+                }
+
+            }
+
+            Rectangle {
+                id: backBtn
+
+
+                width: 150
+                height: 50
+
+                anchors {
+                    top: parent.top
+                    left: parent.left
+                    margins: 10
+                }
+
+                color: "#1Affffff"
+
+                border {
+                    color: "#33c2c2c2"
+                    width: 2
+                }
+                radius: 10
+
+                Row {
+                    spacing: 8
+
+                    anchors {
+                        centerIn: parent
+                    }
+
+                    Image {
+                        source: "qrc:/Resources/icons/back.png"
+                        width: 24
+                        height: 24
+                        fillMode: Image.PreserveAspectFit
+                    }
+
+                    Text {
+                        id: backBtnText
+                        text: qsTr("Back")
+                        color: "white"
+
+                        font.pixelSize: 15
+
+                        // anchors {
+                        //     fill: parent
+                        //     margins: 10
+                        // }
+
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
-
-                        text: gameManager ? gameManager.board_table[index] : ""
                     }
+                }
 
-                    MouseArea {
-                        anchors.fill: parent
-                        onClicked: {
-                            gameManager.update(index)
-                        }
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        console.log("Back to main window")
+                        gameManager.reset()
+                        pagesContainer.pop()
                     }
                 }
             }
-        }
 
-        Rectangle {
-            id: backBtn
 
-            anchors {
-                bottom: parent.bottom
-                left: parent.left
-                margins: 10
-            }
-
-            width: 70
-            height: width/2
-
-            color: "transparent"
-            radius: 20
-
-            border {
-                color: "black"
-                width: 2
-            }
-
-            Text {
-                id: backBtnText
-                text: qsTr("Back")
-
-                font.pixelSize: 15
+            Rectangle {
+                id: gameModeContainer
+                width: 200
+                height: 50
 
                 anchors {
-                    fill: parent
+                    top: parent.top
+                    horizontalCenter: parent.horizontalCenter
                     margins: 10
                 }
 
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-            }
+                color: "transparent"
 
-            MouseArea {
-                anchors.fill: parent
-                onClicked: {
-                    console.log("Back to main window")
-                    gameManager.reset()
-                    pagesContainer.pop()
+
+                Row {
+                    spacing: 8
+                    anchors {
+                        centerIn: parent
+                    }
+
+                    Image {
+                        source: "qrc:/Resources/icons/people.png"
+                        width: 24
+                        height: 24
+                        fillMode: Image.PreserveAspectFit
+                    }
+
+                    Text {
+                        id: gameModeText
+                        text: gameManager ? gameManager.getGame_mode() : "Player vs Player"
+                        color: "white"
+
+                        font.pixelSize: 15
+
+                        // anchors {
+                        //     fill: parent
+                        //     margins: 10
+                        // }
+
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
                 }
             }
-        }
 
+            Rectangle {
+                id: resetBtn
 
-        Rectangle {
-            id: resetBtn
-
-            anchors {
-                bottom: parent.bottom
-                right: parent.right
-                margins: 10
-            }
-
-            width: 70
-            height: width/2
-
-            color: "transparent"
-            radius: 20
-
-            border {
-                color: "black"
-                width: 2
-            }
-
-            Text {
-                id: resetBtnText
-                text: qsTr("Reset")
-
-                font.pixelSize: 15
+                width: 150
+                height: 50
 
                 anchors {
-                    fill: parent
+                    top: parent.top
+                    right: parent.right
                     margins: 10
                 }
 
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-            }
+                color: "#1Affffff"
 
-            MouseArea {
-                anchors.fill: parent
-                onClicked: {
-                    console.log("Reset Board")
+                border {
+                    color: "#33c2c2c2"
+                    width: 2
+                }
+                radius: 10
 
-                    gameManager.reset()
+                Row {
+                    spacing: 8
+
+                    anchors {
+                        centerIn: parent
+                    }
+
+                    Image {
+                        source: "qrc:/Resources/icons/restart.png"
+                        width: 24
+                        height: 24
+                        fillMode: Image.PreserveAspectFit
+                    }
+
+                    Text {
+                        id: resetBtnText
+                        text: qsTr("Reset")
+                        color: "white"
+
+                        font.pixelSize: 15
+
+                        // anchors {
+                        //     fill: parent
+                        //     margins: 10
+                        // }
+
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        console.log("Reset Board")
+
+                        gameManager.reset()
+                    }
                 }
             }
+
+            Rectangle {
+                id: playerAndResult
+                anchors {
+                    bottom: gridContainer.top
+                    horizontalCenter: parent.horizontalCenter
+                    bottomMargin: 30
+                }
+
+                Row {
+                    spacing: 8
+
+                    anchors {
+                        centerIn: parent
+                    }
+
+                    Image {
+                        source: "qrc:/Resources/icons/trophy.png"
+                        width: 24
+                        height: 24
+                        fillMode: Image.PreserveAspectFit
+                        visible: (gameManager && ((gameManager.game_state == 3) || (gameManager.game_state == 2))) ? false : true
+                    }
+
+                    Text {
+                        // text: (gameManager.game_state() == "Continue") ? ("Current player: " + gameManager.getCurrent_player()) : gameManager.game_state()
+                        text: gameManager && gameManager.game_state == 3 ? ("Current Player: " + gameManager.getCurrent_player()) : (gameManager.game_state == 2 ? "Draw" : (gameManager.game_state == 1 ? "Player O Wins" : "Player X Wins"))
+                        color: "white"
+
+                        font.pixelSize: 15
+
+                        // anchors {
+                        //     fill: parent
+                        //     margins: 10
+                        // }
+
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                }
+            }
+
+
+
+
         }
+
 
     }
 

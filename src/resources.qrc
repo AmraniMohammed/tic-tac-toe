@@ -8,5 +8,8 @@
         <file>Resources/icons/setting.png</file>
         <file>Resources/icons/game_icon.png</file>
         <file>UI/Startup.qml</file>
+        <file>Resources/icons/restart.png</file>
+        <file>Resources/icons/back.png</file>
+        <file>Resources/icons/trophy.png</file>
     </qresource>
 </RCC>

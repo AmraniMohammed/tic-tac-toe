@@ -21,9 +21,9 @@ ApplicationWindow {
         }
 
         gradient: Gradient {
-            GradientStop { position: 0.0; color: "#3867d6" }
-            GradientStop { position: 0.33; color: "#4b7bec" }
-            GradientStop { position: 1.0; color: "#45aaf2" }
+            GradientStop { position: 0.0; color: "#374151" }
+            GradientStop { position: 0.33; color: "#475569" }
+            GradientStop { position: 1.0; color: "#1d4ed8" }
             orientation : Gradient.Horizontal
         }
     }
