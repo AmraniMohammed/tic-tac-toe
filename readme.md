@@ -1,7 +1,9 @@
 # Tic Tac Toe with AI (Sprint 3 – Planning)
 
 A C++ Tic Tac Toe project with Qt/QML UI and AI player.
-**Sprint 2 (UI/UX, GameManager wrapper, CI, unit tests)** is complete — work continues in **Sprint 3 (enhancements & optional features)**.
+
+**Sprint 2 (UI/UX, GameManager wrapper, CI, unit tests)** is complete  
+**Sprint 3 adds refined UI/UX and demo assets (screenshots & video).**
 
 ---
 
@@ -12,7 +14,7 @@ A C++ Tic Tac Toe project with Qt/QML UI and AI player.
 - Qt/QML UI for interactive play
 - Core game logic (`Board`, `AIPlayer`) separated from UI
 - `GameManager` wrapper exposes Core to QML
-- Console version snapshot maintained in branch `console`
+- Console version snapshot maintained in branch `console_version`
 - CI/CD pipeline automatically builds, tests, and packages the app
 
 ---
@@ -43,6 +45,7 @@ TicTacToe/
 │   ├── test_main.cpp
 │   └── CMakeLists.txt
 └── CMakeLists.txt
+└── docs/ # Images of the App
 ```
 
 ---
@@ -116,16 +119,39 @@ ctest --test-dir .
 
 **Goals / planned features:**
 
-- Add screenshots/video demo to README
-- Refine UI for end-of-game highlight and UX improvements
-- Optional: Add alpha–beta pruning to `AIPlayer::miniMaxAlgo` for optimization
-- Optional: visual polish, animations, or sounds
+- Refined UI for end-of-game highlight and overall UX improvements
+- Added demo assets (screenshots & video placeholders in README)
+
+**New features in Sprint 3:**
+
+- Improved visuals for game-over states
+- Better user flow for restart/menu handling
+- Documentation improvements with demo previews
+
+📸 **Screenshots:**
+
+- Startup window:
+
+  ![Startup Screenshot](docs/startup1.png)
+
+  ![Startup Screenshot](docs/startup2.png)
+
+- Game window:
+
+  ![Game Screenshot](docs/game.png)
+
+🎥 **Video demo:**  
+[Watch demo](https://drive.google.com/file/d/1IvyxHMo5QUc-CaR227afCUwTQ1cmD9NW/view?usp=sharing)
 
 ---
 
 ## Future TODOs / Nice-to-Have Features
 
+These are explored but not yet implemented:
+
+- Alpha–beta pruning in `AIPlayer::miniMaxAlgo` for faster AI
+- Visual polish: animations, transitions, or sounds
 - Networking support for two-player mode over LAN or Internet
-- Score tracking or game replay system
+- Score tracking
 
 ---
