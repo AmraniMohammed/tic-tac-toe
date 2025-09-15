@@ -300,8 +300,6 @@ QVariantList GameManager::toVariantList2D(const std::vector<std::vector<int> > &
 {
     QVariantList outer_list;
 
-    qWarning() << "Vec2 size is " << vec2d.size();
-
     for (const auto& inner : vec2d) {
         QVariantList line;
 
@@ -359,7 +357,6 @@ QVector<QVector<int> > GameManager::toQVector2D(const std::vector<std::vector<in
 
     for (const auto& inner : vec2d) {
         if (inner.size() != 2) {
-            qWarning() << "Inner vector does not have 2 elements!";
             continue;
         }
         QVector<int> row;

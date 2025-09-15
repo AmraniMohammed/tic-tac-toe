@@ -236,7 +236,6 @@ Page {
 
                         onValueChanged:
                         {
-                            // console.log("Slider Value : " , value);
                             board_size_value = value
                         }
 
@@ -531,9 +530,6 @@ Page {
                         Text {
                             font.pixelSize: 14
                             font.bold : true
-                            // anchors {
-                            //     centerIn: parent
-                            // }
                             text: "Start Game"
                             color: "white"
                         }

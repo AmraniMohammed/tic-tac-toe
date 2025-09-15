@@ -157,11 +157,6 @@ Page {
 
                         font.pixelSize: 15
 
-                        // anchors {
-                        //     fill: parent
-                        //     margins: 10
-                        // }
-
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                     }
@@ -170,7 +165,6 @@ Page {
                 MouseArea {
                     anchors.fill: parent
                     onClicked: {
-                        console.log("Back to main window")
                         gameManager.reset()
                         pagesContainer.pop()
                     }
@@ -211,11 +205,6 @@ Page {
                         color: "white"
 
                         font.pixelSize: 15
-
-                        // anchors {
-                        //     fill: parent
-                        //     margins: 10
-                        // }
 
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
@@ -264,11 +253,6 @@ Page {
 
                         font.pixelSize: 15
 
-                        // anchors {
-                        //     fill: parent
-                        //     margins: 10
-                        // }
-
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                     }
@@ -277,8 +261,6 @@ Page {
                 MouseArea {
                     anchors.fill: parent
                     onClicked: {
-                        console.log("Reset Board")
-
                         gameManager.reset()
                     }
                 }
@@ -308,16 +290,10 @@ Page {
                     }
 
                     Text {
-                        // text: (gameManager.game_state() == "Continue") ? ("Current player: " + gameManager.getCurrent_player()) : gameManager.game_state()
                         text: gameManager && gameManager.game_state == 3 ? ("Current Player: " + gameManager.getCurrent_player()) : (gameManager.game_state == 2 ? "Draw" : (gameManager.game_state == 1 ? "Player O Wins" : "Player X Wins"))
                         color: "white"
 
                         font.pixelSize: 15
-
-                        // anchors {
-                        //     fill: parent
-                        //     margins: 10
-                        // }
 
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter

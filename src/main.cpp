@@ -16,9 +16,6 @@ int main(int argc, char *argv[])
     GameManager wrapper(board);
     engine.rootContext()->setContextProperty("gameManager", &wrapper);
 
-    // GameManager* wrapper = new GameManager(board);
-    // qmlRegisterSingletonInstance("Game", 1, 0, "GameManager", wrapper);
-
     app.setWindowIcon(QIcon(":/Resources/icons/game_icon.png"));
 
 
