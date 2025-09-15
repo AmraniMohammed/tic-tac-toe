@@ -124,6 +124,10 @@ ctest --test-dir .
 - Improved UX (restart/menu handling)
 - Documentation & demo assets (screenshots + video)
 
+## 🎮 Download
+
+You can download the latest packaged version of the game from the [Releases page](https://github.com/AmraniMohammed/tic_tac_toe/releases).
+
 ## Future TODOs / Nice-to-Have Features
 
 These are explored but not yet implemented:
