@@ -88,7 +88,7 @@ ctest --test-dir .
   ![Game Screenshot](docs/game.png)
 
 - 🎥 **Video demo:**  
-  [Watch demo](https://drive.google.com/file/d/1IvyxHMo5QUc-CaR227afCUwTQ1cmD9NW/view?usp=sharing)
+  [Watch demo video](https://drive.google.com/file/d/1IvyxHMo5QUc-CaR227afCUwTQ1cmD9NW/view?usp=sharing)
 
 ---
 
