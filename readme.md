@@ -1,56 +1,43 @@
-# Tic Tac Toe with AI (Sprint 3 – Planning)
+# Tic Tac Toe with AI
 
-A C++ Tic Tac Toe project with Qt/QML UI and AI player.
+A cross-platform **C++ Tic Tac Toe game** with a modern **Qt/QML UI** and AI opponent (random & minimax).  
+Built with **CMake, Qt6, GoogleTest**, and packaged via **GitHub Actions CI/CD**.
 
-**Sprint 2 (UI/UX, GameManager wrapper, CI, unit tests)** is complete  
-**Sprint 3 adds refined UI/UX and demo assets (screenshots & video).**
-
----
-
-## Project overview
-
-- Two-player (local) mode
-- One-player vs AI (easy = random, hard = minimax)
-- Qt/QML UI for interactive play
-- Core game logic (`Board`, `AIPlayer`) separated from UI
-- `GameManager` wrapper exposes Core to QML
-- Console version snapshot maintained in branch `console_version`
-- CI/CD pipeline automatically builds, tests, and packages the app
+> ℹ️ **Note:** A **console version** of the game (text-based) is also available in the branch [`console_version`](https://github.com/AmraniMohammed/tic_tac_toe/tree/console_version).
 
 ---
 
-## Repository layout
+## ✨ Features
+
+- Local two-player mode
+- One-player vs AI:
+  - Easy (random)
+  - Hard (minimax algorithm)
+- Qt/QML interface with polished visuals
+- Highlighting of winning lines
+- Restart & menu navigation
+- Separation of **core game logic** (`Board`, `AIPlayer`) from **UI layer**
+- Automated builds, tests, and packaging via CI/CD
+
+---
+
+## 📂 Repository Layout
 
 ```
 TicTacToe/
 ├── src/
-│   ├── main.cpp
-│   ├── resources.qrc
-│   ├── Core/
-│   │   ├── include/
-│   │   │   ├── AIPlayer.h
-│   │   │   ├── Board.h
-│   │   │   └── GameTypes.h
-│   │   ├── AIPlayer.cpp
-│   │   └── Board.cpp
-│   ├── Wrapper/
-│   │   ├── GameManager.h
-│   │   ├── GameManager.cpp
-│   │   └── GameTypesWrapper.h
-│   └── UI/
-│       └── Main.qml
-│       └── Startup.qml
-│       └── Game.qml
-├── tests/
-│   ├── test_main.cpp
-│   └── CMakeLists.txt
+│ ├── Core/ # Core logic (Board, AIPlayer, GameTypes)
+│ ├── Wrapper/ # GameManager bridge to QML
+│ ├── UI/ # QML interface files
+│ └── main.cpp
+├── tests/ # GoogleTest unit tests
+├── docs/ # Screenshots and demo assets
 └── CMakeLists.txt
-└── docs/ # Images of the App
 ```
 
 ---
 
-## Quick Build & Run (Qt6 QML UI)
+## 🚀 Quick Build & Run (Qt6 QML UI)
 
 1. Ensure Qt 6 is installed with your preferred compiler (MSVC or MinGW).
 2. Open terminal or Developer Command Prompt.
@@ -88,62 +75,54 @@ ctest --test-dir .
 
 ---
 
-## ✅ Sprint 1 — Completed
+## 📸 Screenshots:
 
-- Console version: core components (`Board`, `GameManager`, `AIPlayer`)
-- Minimax AI implemented (hard mode); random AI (easy mode)
-- Winner evaluation with draw detection
-- Basic unit test for `Board::evaluateWinner()`
-
----
-
-## ✅ Sprint 2 — Completed
-
-- Qt/QML GUI fully implemented
-- `GameManager` QObject wrapper for QML
-- Increased test coverage (all winner cases + AI scenarios)
-- CI/CD: automatic build, test, and packaging
-- Executable packaged as `.zip` artifact
-
-**New features in Sprint 2:**
-
-- GUI: interactive tiles/buttons, restart button, menu
-- Difficulty selector (easy/hard)
-- Highlight winning line (UI)
-- Unit tests & integration tests
-- CI/CD pipeline (GitHub Actions)
-
----
-
-## ⏭️ Sprint 3 — Enhancements & Optional Features
-
-**Goals / planned features:**
-
-- Refined UI for end-of-game highlight and overall UX improvements
-- Added demo assets (screenshots & video placeholders in README)
-
-**New features in Sprint 3:**
-
-- Improved visuals for game-over states
-- Better user flow for restart/menu handling
-- Documentation improvements with demo previews
-
-📸 **Screenshots:**
-
-- Startup window:
+- **Startup window:**
 
   ![Startup Screenshot](docs/startup1.png)
 
   ![Startup Screenshot](docs/startup2.png)
 
-- Game window:
+- **Game window:**
 
   ![Game Screenshot](docs/game.png)
 
-🎥 **Video demo:**  
-[Watch demo](https://drive.google.com/file/d/1IvyxHMo5QUc-CaR227afCUwTQ1cmD9NW/view?usp=sharing)
+- 🎥 **Video demo:**  
+  [Watch demo](https://drive.google.com/file/d/1IvyxHMo5QUc-CaR227afCUwTQ1cmD9NW/view?usp=sharing)
 
 ---
+
+## 🛠 Development Process (Agile Sprints)
+
+### ✅ Sprint 0
+
+- Implemented 3×3 board
+- Handled two-player turn logic
+- Built basic console display
+- Added game state evaluation (win/draw)
+- Implemented simple AI (random moves)
+
+### ✅ Sprint 1
+
+- Core components: `Board`, `GameManager`, `AIPlayer`
+- Minimax AI (hard mode) + random AI (easy mode)
+- Winner evaluation with draw detection
+- Basic unit tests for `Board::evaluateWinner()`
+
+### ✅ Sprint 2
+
+- Qt/QML GUI implementation
+- `GameManager` QObject wrapper for QML
+- Expanded test coverage
+- CI/CD pipeline (GitHub Actions) for build, test & packaging
+- Features: difficulty selector, restart button, winning line highlight
+- Packaged executable as `.zip` artifact
+
+### ✅ Sprint 3
+
+- Refined UI for end-of-game states
+- Improved UX (restart/menu handling)
+- Documentation & demo assets (screenshots + video)
 
 ## Future TODOs / Nice-to-Have Features
 
