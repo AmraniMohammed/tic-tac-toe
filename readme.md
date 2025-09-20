@@ -1,6 +1,7 @@
 # Tic Tac Toe with AI
 
 A cross-platform **C++ Tic Tac Toe game** with a modern **Qt/QML UI** and AI opponent (random & minimax).  
+Supports **dynamic board sizes** (not limited to 3×3).  
 Built with **CMake, Qt6, GoogleTest**, and packaged via **GitHub Actions CI/CD**.
 
 > ℹ️ **Note:** A **console version** of the game (text-based) is also available in the branch [`console_version`](https://github.com/AmraniMohammed/tic_tac_toe/tree/console_version).
